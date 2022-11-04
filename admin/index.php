@@ -36,18 +36,18 @@
     }
 
 
-    $account=new Account();
+    // $account=new Account();
     $patient=new Patient();
-    $p=new Patient();
-    $doctor=new Doctor();
-    $nurse=new Nurse();
-    $pharm=new Pharmacist();
+    // $p=new Patient();
+    // $doctor=new Doctor();
+    // $nurse=new Nurse();
+    // $pharm=new Pharmacist();
     $opd=new Visit();
     $pmt=new Payment();
     $expenditure=new Expenditure();
-    $account=new Account();
+    // $account=new Account();
     $service=new Service();
-    $staff=new Staff();
+    // $staff=new Staff();
 
     $today=date('Y-m-d');
     $this_month=date('m');
@@ -60,7 +60,7 @@
 
 
 
-<main class="pb-3 ml-lg-5 main" style="">
+<main class="pb-3 ml-lg-5 main">
   <div class="container-fluid mt-0 pt-5">
 
     <div class="row mb-4">
@@ -214,7 +214,7 @@
                                                                                         status='active' AND
                                                                                         subscriber_id='".$active_subscriber."' AND
                                                                                         visit_date='".$today."'
-                                                                            ") or die(mysqli_query($db));
+                                                                            ") or die(mysqli_error($db));
                     while ($patients=mysqli_fetch_array($get_patients_today)) {
                       $patient->patient_id=$patients['patient_id'];
                       $patient->PatientInfo();

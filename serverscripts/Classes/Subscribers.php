@@ -9,6 +9,23 @@
 
     function __construct(){
       $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
+
+      $sql="CREATE TABLE IF NOT EXISTS subscriptions (
+        sn int NOT NULL,
+        subscriber_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        hospital_name text COLLATE utf8_unicode_ci NOT NULL,
+        address text COLLATE utf8_unicode_ci NOT NULL,
+        phone_numbers text COLLATE utf8_unicode_ci NOT NULL,
+        email text COLLATE utf8_unicode_ci NOT NULL,
+        status text COLLATE utf8_unicode_ci NOT NULL,
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
+
+
+
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
     }
@@ -44,5 +61,3 @@
 
 
   }
-
- ?>

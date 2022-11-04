@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 if(!isset($_SESSION['active_subscriber'])){
   session_start();
 }
@@ -79,7 +79,7 @@ function clean_string($string){
   $string=trim($string);
   $string=htmlspecialchars($string);
   // $string=mysqli_real_escape_string($string);
-  $string=filter_var($string,FILTER_SANITIZE_STRING);
+  // $string=filter_var($string,FILTER_SANITIZE_STRING);
   return $string;
 }
 

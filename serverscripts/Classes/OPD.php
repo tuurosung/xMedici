@@ -9,8 +9,28 @@
     Public $visit_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
-      $this->mysqli=new mysqli('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici');
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
+
+      $sql="CREATE TABLE IF NOT EXISTS visits (
+        sn int NOT NULL AUTO_INCREMENT,
+        subscriber_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        patient_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        visit_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        visit_type varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        visit_date date NOT NULL,
+        doctor_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        major_complaint text COLLATE utf8_unicode_ci NOT NULL,
+        primary_diagnosis varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        secondary_diagnosis varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        status varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        department_id varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        admission_status text COLLATE utf8_unicode_ci NOT NULL,
+        timestamp varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
 
       if(!isset($_SESSION['active_subscriber']) || !isset($_SESSION['active_user']) || $_SESSION['active_subscriber']=='' || $_SESSION['active_user']==''){
         die('session_expired');

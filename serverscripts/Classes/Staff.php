@@ -45,6 +45,15 @@
         ) ";
 
         $this->mysqli->query($sql);
+
+        $sql="CREATE TABLE IF NOT EXISTS hr_categories (
+          sn int NOT NULL AUTO_INCREMENT,
+          alias varchar(19) COLLATE utf8_unicode_ci NOT NULL,
+          description text COLLATE utf8_unicode_ci NOT NULL,
+          PRIMARY KEY (sn)
+        )";
+
+        $this->mysqli->query($sql);
         
 
         if(isset($_SESSION['active_subscriber'])){
@@ -91,7 +100,13 @@
         	$account_status=$info['status'];
         	$permission=$info['permission'];
 
+          
+
           if($role=='administrator'){
+              $_SESSION['username']=$username;
+              $_SESSION['access_level']=$role;
+              $_SESSION['active_user']=$user_id;
+              $_SESSION['active_subscriber']=$active_subscriber;
             return 'login_successful';
           }else {
             if($permission =='granted'){

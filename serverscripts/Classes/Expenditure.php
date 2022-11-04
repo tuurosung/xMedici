@@ -8,9 +8,29 @@
     Public $expenditure_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
+
+      $sql="CREATE TABLE IF NOT EXISTS expenditure (
+        sn int NOT NULL AUTO_INCREMENT,
+        subscriber_id varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        expenditure_id varchar(25) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        expenditure_account varchar(25) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        description text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        amount double(10,2) NOT NULL,
+        payment_account varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+        notes text COLLATE utf8_unicode_ci NOT NULL,
+        date date NOT NULL,
+        status text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+        timestamp varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
+
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
+
     }
 
     function GetExpenditureHeaders(){

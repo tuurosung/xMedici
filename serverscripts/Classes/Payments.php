@@ -1,9 +1,6 @@
 <?php
-  // require_once 'Billing.php';
-
-
   /**
-   * Expenditure
+   * Class for handling payments
    */
   class Payment{
 
@@ -12,8 +9,29 @@
     Public $visit_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
-      $this->mysqli=new mysqli('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici');
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
+
+      $sql="CREATE TABLE IF NOT EXISTS payments (
+        sn int NOT NULL AUTO_INCREMENT,
+        subscriber_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        patient_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        visit_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        bill_id varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        payment_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        amount_payable double(10,2) NOT NULL,
+        amount_paid double(10,2) NOT NULL,
+        balance double(10,2) NOT NULL,
+        date date NOT NULL,
+        status text COLLATE utf8_unicode_ci NOT NULL,
+        income_account varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        payment_account varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        timestamp varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        cashier varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
 
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->active_user=$_SESSION['active_user'];

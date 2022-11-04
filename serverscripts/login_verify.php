@@ -6,14 +6,14 @@ require_once 'Classes/Staff.php';
 
 // require_once '../hubtel/vendor/autoload.php';
 
-// $hospital=new Subscriber();
+$hospital=new Subscriber();
 $date=date('Y-m-d');
 $time=date('H:i:s');
 
-// $hospital->HospitalInfo();
-// $hospital_name=$hospital->hospital_name;
-// $hospital_email=$hospital->hospital_email;
-// $browserAgent = $_SERVER['HTTP_USER_AGENT'];
+$hospital->HospitalInfo();
+$hospital_name=$hospital->hospital_name;
+$hospital_email=$hospital->hospital_email;
+$browserAgent = $_SERVER['HTTP_USER_AGENT'];
 
 $username=clean_string($_GET['username']);
 $password=clean_string($_GET['password']);

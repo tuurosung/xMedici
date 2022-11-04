@@ -9,77 +9,42 @@ require_once '../serverscripts/dbcon.php';
 require_once '../serverscripts/Classes/Patient.php';
 require_once '../serverscripts/Classes/OPD.php';
 require_once '../serverscripts/Classes/Services.php';
-require_once '../serverscripts/Classes/Admins.php';
-require_once '../serverscripts/Classes/AdminsHr.php';
-require_once '../serverscripts/Classes/Doctors.php';
-require_once '../serverscripts/Classes/Nurses.php';
-require_once '../serverscripts/Classes/Pharmacists.php';
-require_once '../serverscripts/Classes/Labtists.php';
-require_once '../serverscripts/Classes/Accountants.php';
-require_once '../serverscripts/Classes/Tests.php';
+// require_once '../serverscripts/Classes/Admins.php';
+// require_once '../serverscripts/Classes/AdminsHr.php';
+// require_once '../serverscripts/Classes/Doctors.php';
+// require_once '../serverscripts/Classes/Nurses.php';
+// require_once '../serverscripts/Classes/Pharmacists.php';
+// require_once '../serverscripts/Classes/Labtists.php';
+// require_once '../serverscripts/Classes/Accountants.php';
+// require_once '../serverscripts/Classes/Tests.php';
 require_once '../serverscripts/Classes/Payments.php';
-require_once '../serverscripts/Classes/Surgeries.php';
-require_once '../serverscripts/Classes/Wards.php';
+// require_once '../serverscripts/Classes/Surgeries.php';
+// require_once '../serverscripts/Classes/Wards.php';
 
-require_once '../serverscripts/Classes/Invoices.php';
-require_once '../serverscripts/Classes/Drugs.php';
-require_once '../serverscripts/Classes/Pharmacy.php';
-require_once '../serverscripts/Classes/Reports.php';
+// require_once '../serverscripts/Classes/Invoices.php';
+// require_once '../serverscripts/Classes/Drugs.php';
+// require_once '../serverscripts/Classes/Pharmacy.php';
+// require_once '../serverscripts/Classes/Reports.php';
 require_once '../serverscripts/Classes/Expenditure.php';
-require_once '../serverscripts/Classes/Banking.php';
-require_once '../serverscripts/Classes/Accounts.php';
-require_once '../serverscripts/Classes/Suppliers.php';
+// require_once '../serverscripts/Classes/Banking.php';
+// require_once '../serverscripts/Classes/Accounts.php';
+// require_once '../serverscripts/Classes/Suppliers.php';
 require_once '../serverscripts/Classes/Subscribers.php';
 require_once '../serverscripts/Classes/Staff.php';
-require_once '../serverscripts/Classes/Users.php';
+// require_once '../serverscripts/Classes/Users.php';
 
 
 
-$user_id=$_SESSION['active_user'];
+$staff_id=$_SESSION['active_user'];
 $access_level=$_SESSION['access_level'];
 $active_subscriber=$_SESSION['active_subscriber'];
 
-$user=new User();
-$user->user_id=$user_id;
-$user->UserInfo();
+$staff=new Staff();
+$staff->staff_id=$staff_id;
+$staff->StaffInfo();
 
 $user_prefix=substr($user_id,0,2);
-switch ($user_prefix) {
-  case 'NR':
-    $nurse=new Nurse();
-    $nurse->nurse_id=$user_id;
-    $nurse->NurseInfo();
-    $user_fullname=$nurse->nurse_fullname;
-    break;
 
-  case 'DR':
-    $nurse=new Nurse();
-    $doctor=new Doctor();
-    $doctor->doctor_id=$user_id;
-    $doctor->DoctorInfo();
-    $user_fullname=$doctor->doctor_fullname;
-    break;
-
-  case 'AC':
-    $accountant=new Accountant();
-    $accountant->accountant_id=$user_id;
-    $accountant->AccountantInfo();
-    $user_fullname=$accountant->accountant_fullname;
-    break;
-  case 'HR':
-    $hr=new Hr();
-    $hr->hr_id=$user_id;
-    $hr->HrInfo();
-    $user_fullname=$hr->hr_fullname;
-    break;
-
-  default:
-    // code...
-    break;
-}
-
-// $user_info=mysqli_query($db,"SELECT * FROM users WHERE user_id='".$user_id."' AND subscriber_id='".$active_subscriber."'") or die(msyqli_error($db));
-// $user_info=mysqli_fetch_array($user_info);
 
 $hospital=new Subscriber();
 $hospital->HospitalInfo();

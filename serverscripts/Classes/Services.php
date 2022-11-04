@@ -8,8 +8,45 @@
     Public $service_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
-      $this->mysqli=new mysqli('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici');
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
+
+
+      $sql="CREATE TABLE IF NOT EXISTS services (
+        sn int NOT NULL AUTO_INCREMENT,
+        subscriber_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        service_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        description text COLLATE utf8_unicode_ci NOT NULL,
+        service_type varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        billing_cycle varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        billing_point varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        billing_type varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        service_cost double(10,2) NOT NULL,
+        status text COLLATE utf8_unicode_ci NOT NULL,
+        date date NOT NULL,
+        PRIMARY KEY (sn)
+      )"; 
+
+      $this->mysqli->query($sql);
+
+      $sql="CREATE TABLE IF NOT EXISTS service_requests (
+        sn int NOT NULL AUTO_INCREMENT,
+        subscriber_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        patient_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        visit_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        request_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        service_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        service_cost double(10,2) NOT NULL,
+        qty int NOT NULL,
+        total double(10,2) NOT NULL,
+        date date NOT NULL,
+        status varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'active',
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
+
+
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
     }

@@ -1,5 +1,5 @@
 <?php
-  // require_once 'Billing.php';
+
   /**
    * Expenditure
    */
@@ -8,8 +8,36 @@
     Public $patient_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
-      $this->mysqli=new mysqli('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici');
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
+
+      $sql="CREATE TABLE IF NOT EXISTS patients (
+        sn int NOT NULL AUTO_INCREMENT,
+        subscriber_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        date date NOT NULL,
+        patient_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        surname text COLLATE utf8_unicode_ci NOT NULL,
+        othernames text COLLATE utf8_unicode_ci NOT NULL,
+        date_of_birth date NOT NULL,
+        sex text COLLATE utf8_unicode_ci NOT NULL,
+        phone_number text COLLATE utf8_unicode_ci NOT NULL,
+        hse_address text COLLATE utf8_unicode_ci NOT NULL,
+        town text COLLATE utf8_unicode_ci NOT NULL,
+        region text COLLATE utf8_unicode_ci NOT NULL,
+        hometown text COLLATE utf8_unicode_ci NOT NULL,
+        occupation text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        religion text COLLATE utf8_unicode_ci NOT NULL,
+        marital_status varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        nearest_relative text COLLATE utf8_unicode_ci NOT NULL,
+        relative_phone text COLLATE utf8_unicode_ci NOT NULL,
+        payment_mode text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        nhis_number text COLLATE utf8_unicode_ci NOT NULL,
+        status text COLLATE utf8_unicode_ci NOT NULL,
+        user_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
 
       if(!isset($_SESSION['active_subscriber']) || !isset($_SESSION['active_user']) || $_SESSION['active_subscriber']=='' || $_SESSION['active_user']==''){
         die('session_expired');
@@ -86,7 +114,7 @@
         $this->last_visit='N/A';
       }
 
-      $count_visits=mysqli_query($this->db,"SELECT COUNT(*) as total_visit_count FROM visits WHERE patient_id='".$this->patient_id."' AND subscriber_id='".$this->active_subscriber."'") or die(msyqli_error($this->db));
+      $count_visits=mysqli_query($this->db,"SELECT COUNT(*) as total_visit_count FROM visits WHERE patient_id='".$this->patient_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count_visits=mysqli_fetch_array($count_visits);
       $this->patient_visit_count=$count_visits['total_visit_count'];
 
@@ -107,7 +135,7 @@
 
         $table='patients';
         $fields=array("subscriber_id","patient_id","surname","othernames","date_of_birth","sex","phone_number","hse_address","town","region","hometown","occupation","religion","marital_status","nearest_relative","relative_phone","payment_mode","nhis_number","status","date","user_id");
-        $values=array("$this->active_subscriber","$patient_id","$surname","$othernames","$date_of_birth","$sex","$phone_number","$hse_address","$town","$region","$hometown","$occupation","$religion","$marital_status","$nearest_relative","$relative_phone","$nhis_status","$nhis_number","active","$this->today","$this->active_user");
+        $values=array("$this->active_subscriber","$patient_id","$surname","$othernames","$date_of_birth","$sex","$phone_number","$hse_address","$town","$region","$hometown","$occupation","$religion","$marital_status","$nearest_relative","$relative_phone","$payment_mode","$nhis_number","active","$this->today","$this->active_user");
         $query=insert_data($this->db,$table,$fields,$values);
 
         $_SESSION['new_patient_id']=$patient_id;

@@ -8,7 +8,7 @@
     Public $accountant_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
     }
@@ -21,7 +21,7 @@
     }
 
     function GetAccountants(){
-      $query=mysqli_query($this->db,"SELECT * FROM accountants WHERE subscriber_id='".$this->active_subscriber."' AND status='active'") or die(msyqli_error($this->db));
+      $query=mysqli_query($this->db,"SELECT * FROM accountants WHERE subscriber_id='".$this->active_subscriber."' AND status='active'") or die(mysqli_error($this->db));
       return $query;
     }//end function
 
