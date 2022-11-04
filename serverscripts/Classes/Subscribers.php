@@ -8,7 +8,7 @@
     Public $active_subscriber='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
     }

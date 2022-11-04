@@ -4,7 +4,7 @@ if(!isset($_SESSION['active_subscriber'])){
   session_start();
 }
 
-$db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+$db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
 $active_subscriber=$_SESSION['active_subscriber'];
 $user_id=$_SESSION['active_user'];
 

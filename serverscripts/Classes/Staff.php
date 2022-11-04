@@ -1,39 +1,114 @@
 <?php
+
+// require_once '../../Includes/dbconn.php';
+
   /**
    *Class for handling users
    */
   class Staff {
     Public $staff_id='';
+    Public $username='';
+    Public $password='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
-      $this->mysqli=new mysqli('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
 
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
 
-      if(!isset($_SESSION['active_subscriber'])){
-        die("NoSession");
-      }
-      else {
-        $this->active_subscriber=$_SESSION['active_subscriber'];
-        $this->active_user=$_SESSION['active_user'];
+        // Create relevant tables 
 
-        $this->today=date('Y-m-d');
-        $this->timenow=date('Y-m-d H:i:s');
+        $sql="CREATE TABLE IF NOT EXISTS staff (
+          sn int NOT NULL,
+          subscriber_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+          staff_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+          category varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+          surname text COLLATE utf8_unicode_ci NOT NULL,
+          othernames text COLLATE utf8_unicode_ci NOT NULL,
+          phone_number text COLLATE utf8_unicode_ci NOT NULL,
+          address text COLLATE utf8_unicode_ci NOT NULL,
+          email text COLLATE utf8_unicode_ci NOT NULL,
+          emergency_contact text COLLATE utf8_unicode_ci NOT NULL,
+          specialisation text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+          accountant_rank text COLLATE utf8_unicode_ci NOT NULL,
+          nurse_rank text COLLATE utf8_unicode_ci NOT NULL,
+          role varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+          auth varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+          mail_verify int NOT NULL,
+          username varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+          password varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+          date date NOT NULL,
+          timestamp varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+          status varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'active',
+          permission varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+          last_login datetime NOT NULL,
+          PRIMARY KEY (sn)
+        ) ";
 
-        // create automatic hr categories
-        $hr_categories=['admin_hr'  =>  'Human Resource',
-                                        'doctor'  =>  'Doctor',
-                                        'nurse'  =>  'Nurse',
-                                        'laboratory'  =>  'Laboratory Scientist',
-                                        'accountant'  =>  'Accountant',
-                                        'pharmacy'  =>  'Pharmacist'
-                                      ];
+        $this->mysqli->query($sql);
+        
+
+        if(isset($_SESSION['active_subscriber'])){
+          $this->active_subscriber=$_SESSION['active_subscriber'];
+          $this->active_user=$_SESSION['active_user'];
+          $this->today=date('Y-m-d');
+          $this->timenow=date('Y-m-d H:i:s');
+
+          // create automatic hr categories
+          $hr_categories=['admin_hr'  =>  'Human Resource',
+            'doctor'  =>  'Doctor',
+            'nurse'  =>  'Nurse',
+            'laboratory'  =>  'Laboratory Scientist',
+            'accountant'  =>  'Accountant',
+            'pharmacy'  =>  'Pharmacist'
+          ];
+
           foreach ($hr_categories as $alias => $description) {
-            $sql="INSERT IGNORE INTO hr_categories(alias,description) VALUES('$alias','$description')";
-            $this->mysqli->query($sql);
+          $sql="INSERT IGNORE INTO hr_categories(alias,description) VALUES('$alias','$description')";
+          $this->mysqli->query($sql);
           }//
-      }
+        }
+
     }//end construct
+
+    function StaffIdGen(){
+      $query=mysqli_query($this->db,"SELECT COUNT(*) as count FROM users WHERE subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
+      $count=mysqli_fetch_assoc($query);
+      $count=++$count['count'];
+      return 'USR'.prefix($count).''.$count;
+    }//end function UserIdGen
+
+    function StaffLogin(){
+      $sql="SELECT * FROM staff WHERE username='".$this->username."' AND password='".$this->password."'";
+      $r=$this->mysqli->query($sql);
+      if($r->num_rows ==1){
+        $info=$r->fetch_assoc();
+
+        	$role=$info['role'];
+        	$user_fullname=$info['full_name'];
+        	$user_id=$info['staff_id'];
+        	$email=$info['email'];
+        	$active_subscriber=$info['subscriber_id'];
+        	$account_status=$info['status'];
+        	$permission=$info['permission'];
+
+          if($role=='administrator'){
+            return 'login_successful';
+          }else {
+            if($permission =='granted'){
+              $_SESSION['username']=$username;
+              $_SESSION['access_level']=$role;
+              $_SESSION['active_user']=$user_id;
+              $_SESSION['active_subscriber']=$active_subscriber;
+              return 'login_successful';
+            }else {
+              return 'Your shift has expired';
+            }
+          }
+        	
+      }else {
+        return 'Wrong username or password';
+      }
+    }
 
     function HrCategories(){
       $sql='SELECT * FROM hr_categories';
@@ -59,28 +134,28 @@
     function StaffInfo(){
 
       $query=mysqli_query($this->db,"SELECT * FROM staff WHERE staff_id='".$this->staff_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'") or die(mysqli_error($this->db));
-      $user_info=mysqli_fetch_array($query);
+      $info=mysqli_fetch_array($query);
 
-      $this->surname=$user_info['surname'];
-      $this->othernames=$user_info['othernames'];
-      $this->full_name=$user_info['surname'] .' '.$user_info['othernames'];
-      $this->phone=$user_info['phone'];
-      $this->email=$user_info['email'];
-      $this->address=$user_info['address'];
-      $this->category=$user_info['category'];
-      $this->role=$user_info['role'];
+      $this->surname=$info['surname'];
+      $this->othernames=$info['othernames'];
+      $this->full_name=$info['surname'] .' '.$info['othernames'];
+      $this->phone=$info['phone'];
+      $this->email=$info['email'];
+      $this->address=$info['address'];
+      $this->category=$info['category'];
+      $this->role=$info['role'];
 
 
 
     }//end function UserInfo
 
     function CreateNewUser($staff_id,$phone_number,$access_level,$username,$password){
-      $user_id=$this->UserIdGen();
+      $staff_id=$this->StaffIdGen();
         //Check if similar details exists
       $check_exists=mysqli_query($this->db,"
-                                                            SELECT user_id FROM users
+                                                            SELECT staff_id FROM staff
                                                             WHERE
-                                                                (user_id='".$user_id."' AND subscriber_id='".$this->active_subscriber."')
+                                                                (staff_id='".$staff_id."' AND subscriber_id='".$this->active_subscriber."')
                                                                 OR
                                                                 (subscriber_id='".$this->active_subscriber."' AND username='".$username."')
                                                     ") or die(mysqli_error($this->db));
