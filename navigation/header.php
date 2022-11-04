@@ -8,6 +8,7 @@ require_once '../serverscripts/dbcon.php';
 
 require_once '../serverscripts/Classes/Patient.php';
 require_once '../serverscripts/Classes/OPD.php';
+require_once '../serverscripts/Classes/Admissions.php';
 require_once '../serverscripts/Classes/Services.php';
 // require_once '../serverscripts/Classes/Admins.php';
 // require_once '../serverscripts/Classes/AdminsHr.php';

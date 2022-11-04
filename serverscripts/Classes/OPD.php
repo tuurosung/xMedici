@@ -111,6 +111,18 @@
       return $data;
     }
 
+    function PatientVisits(){
+      $sql="SELECT * FROM visits WHERE patient_id='".$this->patient_id."' AND  status='active' AND subscriber_id='".$this->active_subscriber."'  ORDER BY visit_date desc";
+      $result=$this->mysqli->query($sql);
+      if($result->num_rows > 0){
+        while ($rows=$result->fetch_assoc()) {
+          $data[]=$rows;
+        }
+        return $data;
+      }
+      
+    }
+
 
     function CreateVisit($patient_id,$visit_type,$major_complaint){
       $visit_id=$this->VisitIdGen();

@@ -39,10 +39,9 @@
     // $account=new Account();
     $patient=new Patient();
     // $p=new Patient();
-    // $doctor=new Doctor();
-    // $nurse=new Nurse();
-    // $pharm=new Pharmacist();
+    $admission=new Admission();
     $opd=new Visit();
+    
     $pmt=new Payment();
     $expenditure=new Expenditure();
     // $account=new Account();
@@ -306,7 +305,6 @@
               <?php
                   $i=1;
                   $shifts=$staff->ShiftManifest();
-                  if(count($shifts)>0){
                     foreach ($shifts as $rows) {
                       $staff_id=$rows['staff_id'];
                       $staff->staff_id=$staff_id;
@@ -321,7 +319,6 @@
                       </li>
                       <?php
                     }
-                  }
 
 
                ?>

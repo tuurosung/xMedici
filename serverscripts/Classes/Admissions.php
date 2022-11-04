@@ -1,7 +1,6 @@
 <?php
-  require_once 'Billing.php';
   /**
-   * OPD Visit
+   * Class for handling admission.
    */
   class Admission{
 
@@ -12,30 +11,49 @@
       $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
       $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
 
-      if(!isset($_SESSION['active_subscriber']) || !isset($_SESSION['active_user']) || $_SESSION['active_subscriber']=='' || $_SESSION['active_user']==''){
-        die('session_expired');
-      }else {
-        $this->active_subscriber=$_SESSION['active_subscriber'];
-        $this->active_user=$_SESSION['active_user'];
-      }
+      $sql="CREATE TABLE IF NOT EXISTS admissions (
+        sn int NOT NULL AUTO_INCREMENT,
+        subscriber_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        admission_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        admission_date date NOT NULL,
+        admission_requested_by varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        admission_request_status text COLLATE utf8_unicode_ci NOT NULL,
+        request_timestamp varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        admission_accepted_by varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        accept_timestamp varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        patient_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        visit_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        ward_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        bed_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        admission_status varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'admitted',
+        admission_notes text COLLATE utf8_unicode_ci NOT NULL,
+        discharge_date date NOT NULL,
+        status text COLLATE utf8_unicode_ci NOT NULL,
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
+
+      $this->active_subscriber=$_SESSION['active_subscriber'];
+      $this->active_user=$_SESSION['active_user'];
 
       $this->suffix=date('y');
       $this->today=date('Y-m-d');
 
 
-      $count_active_admissions=mysqli_query($this->db,"SELECT COUNT(*) as active_admissions FROM admissions WHERE admission_status='admitted' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($db));
+      $count_active_admissions=mysqli_query($this->db,"SELECT COUNT(*) as active_admissions FROM admissions WHERE admission_status='admitted' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count_active_admissions=mysqli_fetch_array($count_active_admissions);
       $this->active_admissions=$count_active_admissions['active_admissions'];
 
-      $count_discharged_admissions=mysqli_query($this->db,"SELECT COUNT(*) as discharged_admissions FROM admissions WHERE admission_status='discharged' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($db));
+      $count_discharged_admissions=mysqli_query($this->db,"SELECT COUNT(*) as discharged_admissions FROM admissions WHERE admission_status='discharged' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count_discharged_admissions=mysqli_fetch_array($count_discharged_admissions);
       $this->discharged_admissions=$count_discharged_admissions['discharged_admissions'];
 
-      $count_total_admissions=mysqli_query($this->db,"SELECT COUNT(*) as total_admissions FROM admissions WHERE  subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($db));
+      $count_total_admissions=mysqli_query($this->db,"SELECT COUNT(*) as total_admissions FROM admissions WHERE  subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count_total_admissions=mysqli_fetch_array($count_total_admissions);
       $this->total_admissions=$count_total_admissions['total_admissions'];
 
-      $pending_discharge=mysqli_query($this->db,"SELECT COUNT(*) as pending_discharge FROM admissions WHERE admission_status='discharge_requested' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($db));
+      $pending_discharge=mysqli_query($this->db,"SELECT COUNT(*) as pending_discharge FROM admissions WHERE admission_status='discharge_requested' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $pending_discharge=mysqli_fetch_array($pending_discharge);
       $this->pending_discharge=$pending_discharge['pending_discharge'];
 

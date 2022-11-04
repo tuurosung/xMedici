@@ -104,7 +104,7 @@
     }//End NewPayment
 
     function DeletePayment($payment_id){
-      $delete_query=mysqli_query($this->db,"UPDATE payments SET status='deleted' WHERE payment_id='".$payment_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($db));
+      $delete_query=mysqli_query($this->db,"UPDATE payments SET status='deleted' WHERE payment_id='".$payment_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       if($delete_query){
         return 'delete_successful';
       }else {

@@ -54,6 +54,20 @@
         )";
 
         $this->mysqli->query($sql);
+
+        $sql="CREATE TABLE IF NOT EXISTS staff_attendance (
+          sn int NOT NULL AUTO_INCREMENT,
+          subscriber_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+          staff_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+          shift_type text COLLATE utf8_unicode_ci NOT NULL,
+          time_in datetime NOT NULL,
+          time_out datetime NOT NULL,
+          log_date date NOT NULL,
+          status text COLLATE utf8_unicode_ci NOT NULL,
+          PRIMARY KEY (sn)
+        )";
+
+        $this->mysqli->query($sql);
         
 
         if(isset($_SESSION['active_subscriber'])){
@@ -154,7 +168,7 @@
       $this->surname=$info['surname'];
       $this->othernames=$info['othernames'];
       $this->full_name=$info['surname'] .' '.$info['othernames'];
-      $this->phone=$info['phone'];
+      $this->phone=$info['phone_number'];
       $this->email=$info['email'];
       $this->address=$info['address'];
       $this->category=$info['category'];

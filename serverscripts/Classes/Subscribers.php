@@ -24,6 +24,33 @@
 
       $this->mysqli->query($sql);
 
+      $sql="CREATE TABLE IF NOT EXISTS syst_departments (
+        sn int NOT NULL AUTO_INCREMENT,
+        department_id varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        department_name text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
+
+      $sql="INSERT IGNORE INTO syst_departments (sn, department_id, department_name) VALUES
+      (1, '001', 'Registration / Information'),
+      (2, '002', 'Nurses Station'),
+      (3, '003', 'Consulting Room'),
+      (4, '004', 'Accident And Emergency'),
+      (5, '005', 'Laboratory'),
+      (6, '006', 'Blood Bank'),
+      (7, '007', 'Pharmacy'),
+      (8, '008', 'Operating Theatre'),
+      (9, '009', 'Medical Imaging / Radiology'),
+      (10, '010', 'Physiotherapy'),
+      (11, '011', 'Obstetrics / Gyenaecology'),
+      (12, '012', 'Orthopaedic'),
+      (13, '013', 'Accounts'),
+      (14, '014', 'Urology')";
+
+      $this->mysqli->query($sql);
+
 
 
       $this->active_subscriber=$_SESSION['active_subscriber'];

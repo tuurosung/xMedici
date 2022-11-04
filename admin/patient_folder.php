@@ -18,9 +18,10 @@
 
 
 	$p=new Patient();
-	$doctor=new Doctor();
 	$visit=new Visit();
 	$p->patient_id=$patient_id;
+
+	$visit->patient_id=$patient_id;
 
 
 
@@ -60,7 +61,7 @@
 
 				<div class="row">
 					<div class="col-md-6 ">
-						<h4 class="titles montserrat mb-5">Patient Folder </h4>
+						<h4 class="titles montserrat mb-5">Patient Profile </h4>
 					</div>
 					<div class="col-md-6 text-right mb-5 <?php if($status=='deceased'){ echo 'd-none'; } ?>">
 						<div class="btn-group">
@@ -88,59 +89,95 @@
 
 					</div>
 				</div>
-
-
+				
+				
 				<div class="row">
-				  <div class="col-3" style="border-right:solid 1px #000">
-						<h4 class="montserrat font-weight-bold"><?php echo $p->patient_fullname; ?></h4>
-						<p>Phone : <span style="font-weight:600"><?php echo $p->phone_number; ?></span></p>
-				  </div>
-					<div class="col-2" style="border-right:solid 1px #000">
-						<p>Sex : <span style="font-weight:600"><?php echo $p->sex_description; ?></span></p>
-						<p>Age :  <span style="font-weight:600"><?php echo $p->age; ?> </span></p>
-					</div>
-					<div class="col-2" style="border-right:solid 1px #000">
-						<p><span style="font-weight:600"><?php echo $p->hse_address; ?></span></p>
+					<div class="col-md-4">
+
+						<div class="card mb-5">
+						  <div class="card-body pt-5">
+
+							<div class="text-center">
+								<img class="" src=" 
+								<?php 
+								if ($p->sex=='male') {
+									echo '../images/dummy_male.png';
+								} else {
+									echo '../images/dummy_female.png';
+								}
+								?> " alt="">
+
+								<h4 class="montserrat font-weight-bold mx-auto"><?php echo $p->patient_fullname; ?></h4>
+
+								<p><i class="fa fa-map-marker" aria-hidden="true"></i> Address  </p>
+								<p><span style="font-weight:600"><?php echo $p->hse_address; ?></span></p>
 						<p><span style="font-weight:600"><?php echo $p->town; ?>, <?php echo $p->region; ?> </span></p>
-					</div>
-				</div>
 
-
-
-				<div class="mt-5">
-						<h6 class="font-weight-bold poppins mb-4">Appointment History</h6>
-
-						<div class="mt-3 font-weight-bold">
-
-							<div class="row mb-3 text-muted" style="font-size:13px">
-								<div class="col-md-2">
-									Date
-								</div>
-								<div class="col-md-3">
-									Doctor
-								</div>
-								<div class="col-md-2">
-									Major Complaint
-								</div>
-								<div class="col-md-3">
-									Diagnosis
-								</div>
-								<div class="col-md-2 text-right">
-									Option
-								</div>
 							</div>
-							<?php
+							
+						  </div>
+						</div>
+
+						<div class="card">
+						  <div class="card-body">
+							<h5 class="card-title">About</h5>
+
+							<div class="row">
+							
+							  <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
+								<p>Sex</p>
+								<p style="font-size:14px; font-weight:500"> <?php echo ucfirst($p->sex); ?> </p>
+							  </div>
+							
+							  <div class="col-lg-5 mb-4 mb-lg-0">
+								<p>Age</p>
+								<p style="font-size:14px; font-weight:500"><?php echo $p->age; ?> </p>
+							  </div>
+							
+							</div>
+
+							<hr>
+							<p>Occupation</p>
+							<p style="font-size:14px; font-weight:500"><?php echo $p->occupation; ?></p>
+							<hr>
+							<p>Phone Number</p>
+							<p style="font-size:14px; font-weight:500"><?php echo $p->phone_number; ?></p>
+							<hr>
+							<p>Email Address</p>
+							<p style="font-size:14px; font-weight:500">Email@YourDomain.com</p>
+							<hr>
+							<p>Emergency Contact</p>
+							<p style="font-size:14px; font-weight:500"><?php echo $p->nearest_relative; ?> - <?php echo $p->relative_phone; ?> </p>
+							<hr>
+
+							
+						  </div>
+						</div>
+					</div>
+					
+					<div class="col-md-8">
+						
+								<div class="card">
+								  <div class="card-body">
+									<h5 class="card-title mb-5">Appointments History</h5>
+									
+									<table class="table table-condensed">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th>Date</th>
+												<th>Visit Type</th>
+												<th>Major Complaint</th>
+												<th>Doctor</th>
+												<th>Diagnosis</th>
+											</tr>
+										</thead>
+										<tbody>
+										<?php
 								$i=1;
-								$get_visits=mysqli_query($db,"SELECT *
-																																	FROM visits
-																																	WHERE
-																																		patient_id='".$patient_id."' AND
-																																		subscriber_id='".$active_subscriber."' AND
-																																		(status='active' OR status='discharged')
-																																	ORDER BY
-																																		visit_date DESC
-																												") or die(mysqli_error($db));
-								while ($rows=mysqli_fetch_array($get_visits)) {
+								
+								$patient_visits=$visit->PatientVisits();
+								foreach ($patient_visits as $rows) {
 									switch ($rows['visit_type']) {
 										case 'new_visit':
 											$visit_type='New Visit';
@@ -161,22 +198,33 @@
 									$visit->VisitInfo($visit_id);
 									$primary_diagnosis=$visit->primary_diagnosis;
 									?>
-									<div class="card mb-3" style="border-left:solid 4px <?php if($rows['status']=='active'){ echo '#0d47a1';}elseif($rows['status']=='discharged'){echo '#cc0000';} ?>">
+									<tr style="border-left:solid 4px <?php if($rows['status']=='active'){ echo '#0d47a1';}elseif($rows['status']=='discharged'){echo '#cc0000';} ?>">
+												<td scope="row"></td>
+												<td>
+													<p><?php echo $doctor->doctor_fullname; ?> </p>
+													<p class="text-muted poppins" style="font-size:11px"><?php echo $doctor->specialisation; ?>
+												</td>
+												<td><?php echo $rows['major_complaint']; ?></td>
+												<td>
+													<p><?php echo $visit->Diagnosis($primary_diagnosis); ?> <?php echo $visit->primary_diagnosis; ?></p>
+													<p class="text-muted poppins" style="font-size:11px"><?php echo $visit->secondary_diagnosis; ?></p>
+												</td>
+											</tr>
+									<div class="card mb-3" >
 										<div class="card-body">
 											<div class="row" style="font-size:13px; font-weight:500">
 												<div class="col-md-2">
 													<?php echo $rows['visit_date']; ?>
 												</div>
 												<div class="col-md-3">
-													<?php echo $doctor->doctor_fullname; ?>
-													<p class="text-muted poppins" style="font-size:11px"><?php echo $doctor->specialisation; ?></p>
+													
+													</p>
 												</div>
 												<div class="col-md-2">
-													<?php echo $rows['major_complaint']; ?>
+													
 												</div>
 												<div class="col-md-4">
-													<p><?php echo $visit->Diagnosis($primary_diagnosis); ?> <?php echo $visit->primary_diagnosis; ?></p>
-													<p class="text-muted poppins" style="font-size:11px"><?php echo $visit->secondary_diagnosis; ?></p>
+													
 
 												</div>
 												<div class="col-md-1 text-right">
@@ -193,16 +241,20 @@
 									<?php
 								}
 							 ?>
+											
+											<tr>
+												<td scope="row"></td>
+												<td></td>
+												<td></td>
+											</tr>
+										</tbody>
+									</table>
+								  </div>
+								</div>
 
-						</div>
-
+					</div>
 				</div>
-
-
-
-
-
-
+				
 
 			</div>
 		</main>
