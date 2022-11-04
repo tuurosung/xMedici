@@ -1,0 +1,376 @@
+
+      .float{
+        position:fixed;
+        width:60px;
+        height:60px;
+        bottom:40px;
+        right:40px;
+        background-color:#0d47a1;
+        color:#fff;
+        border-radius:50px;
+        text-align:center;
+        box-shadow: 2px 2px 3px #999;
+      }
+
+      .my-float{
+        margin-top:22px;
+      }
+
+      .lines{
+              margin-left:40px;
+              margin-top:6px;
+      }
+
+    .dot{
+      width:14px;
+      height:14px;
+      background: #D1D6E6;
+      border-radius:7px;
+    }
+    .dot:first-child{
+      background: #ff8800 ;
+    }
+    .dot:nth-child(3){
+      background: #4285f4 !important;
+    }
+    .dot:nth-child(5){
+      background: #4285f4 !important;
+    }
+
+    .line{
+      height:80px;
+      width:2px;
+      background: #D1D6E6;
+      margin-left:5.3px;
+    }
+
+.custom-cards{
+  background-color: #e1e1e136;
+  min-width: 250px;
+  height: 150px;
+  margin-right: 2em;
+  border-radius: 2em;
+  padding: 2em;
+}
+
+.card-header h6:before {
+  background: #0d47a1;
+  position: absolute;
+  width: 4px;
+  height: 18px;
+  left: -20px;
+  top: 0;
+  content: '';
+}
+.card-header h6 {
+  position: relative;
+  font-family: 'Montserrat',sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+
+}
+.card-header{
+  padding-bottom:0px !important;
+}
+.big-text{
+  font-family: 'Roboto',sans-serif;
+  margin-bottom: 0px !important;
+}
+.primary-text{
+  color: #0d47a1 !important;
+}
+.btn {
+    font-family: 'Poppins',sans-serif;
+}
+.card{
+    -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+.form-control, .custom-select,.select2-container .select2-selection--single {
+  border-radius: 0px;
+  font-size:0.8rem;
+  border:none !important;
+  background-color: #f4f5f7 !important;
+  border-radius:0rem !important;
+}
+.btn{
+  border-radius: 0.9rem;
+}
+.minioptions{
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.minioptions .list-group-item{
+  border:none !important;
+  font-size:10px;
+  font-family: 'Poppins',sans-serif;
+}
+.minioptions .list-group-item:hover{
+  background-color: #0d47a1;
+  color: #fff;
+}
+.card{
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
+}
+.list-group-item{
+  font-weight: 400;
+}
+.custom-list-item{
+  padding-top: 15px !important;
+  padding-bottom: 15px !important;
+  font-weight:600;
+  /* background-color: #fafafa; */
+}
+.spacer{
+  margin-bottom:30px;
+}
+
+.custom-card-border-radius .list-group .list-group-item:first-child {
+    -webkit-border-top-left-radius: 0.9rem;
+    border-top-left-radius: 0.9rem;
+    -webkit-border-top-right-radius: 0.9rem;
+    border-top-right-radius: 0.9rem;
+}
+.custom-card-border-radius .list-group .list-group-item:last-child {
+    -webkit-border-bottom-left-radius: 0.9rem;
+    border-bottom-left-radius: 0.9rem;
+    -webkit-border-bottom-right-radius: 0.9rem;
+    border-bottom-right-radius: 0.9rem;
+}
+.custom-card-border-radius{
+  border-radius: 0.9rem;
+  border:0px !important;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
+}
+
+.avatar{
+  width:30px;
+  height: 30px;
+  border-radius: 20px;
+  background-color: #0d47a1;
+
+}
+
+.card-body .list-group-item{
+  border-top: 1px solid rgba(0,0,0,.03) !important;
+  border-bottom: 1px solid rgba(0,0,0,.03) !important;
+}
+body{
+  background-color: #eff2f7;
+}
+
+.xmedici_pills3.nav-pills .nav-link{
+  padding: 17px 5px 16px;
+  padding-left: 0px;
+  margin-right: 40px;
+}
+
+.xmedici_pills.nav-pills .nav-link.active{
+  border-bottom: none;
+  background-color: #0d47a1;
+  color: #fff;
+  padding: 17px 29px 16px;
+}
+.xmedici_pills.nav-pills .nav-link{
+  padding: 17px 29px 16px;
+}
+.xmedici_pills.nav-pills{
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+/* Nav Pills 2 */
+.xmedici_pills2.nav-pills .nav-link.active{
+  border-bottom: none;
+  border-left: solid 3px #0d47a1;
+  border-right:none;
+  padding: 17px 29px 16px;
+}
+.xmedici_pills2.nav-pills .nav-link{
+  padding: 17px 29px 16px;
+}
+.xmedici_pills.nav-pills{
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.xmedici-lists{
+  border-bottom:solid 1px rgba(0,0,0,0.03) !important;
+  border-right:solid 1px rgba(0,0,0,0.03) !important;
+}
+
+.xmedici_card_main{
+  min-height: 80vh;
+}
+.btn{
+  font-weight:500;
+}
+@font-face {
+  font-family: 'Orlando Signature';
+  src: url('../../mdb/font/orlando.otf');
+}
+.orlando{
+  font-family: 'Orlando Signature';
+}
+
+.avatar-img{
+  width:36px;
+  height: 36px;
+  border-radius: 20px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.hover:hover{
+  background-color:#fff;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+
+.holder-cards{
+  border-radius: 0.9rem;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+.v-align-middle{
+  vertical-align: middle;
+}
+
+.pending_prescriptions:hover{
+  background-color: #0d47a1;
+  color: #fff;
+}
+
+.pending_prescriptions:hover ~ .avatar{
+  background-color: #fff;
+}
+p{
+  margin:0 !important;
+}
+.shadow1{
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 5px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+}
+.shadow2{
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+.grey-text{
+  color: #babbbd;
+}
+/* .btn{
+  margin:0px !important;
+} */
+
+
+@media only screen and (max-width: 768px) {
+  .xmedici_nav_buttons{
+    width: 100%;
+  }
+}
+@media only screen and (min-width: 768px) {
+  #xmedici_nav_buttons_holder{
+    display: flex;
+    margin-left: auto;
+  }
+}
+
+
+.tox-statusbar{
+  display: none !important;
+}
+
+.small-hr{
+  border-top:solid 1px #000;
+  margin-left:0px;
+  width:100px;
+}
+
+
+.input-group-text{
+  background-color: rgba(255, 0, 0, 0.0); !important;
+}
+
+.findpatientresultsholder{
+  max-height: 190px;
+  width: 100%;
+  top:190px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 5px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+  background-color: #fff;
+  position: fixed;
+  z-index: 5000;
+  overflow-y: auto;
+}
+
+.xmedici_icons{
+  padding:10px;
+  background-color: #000;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.sidebar .list-group-item{
+  font-size: 11px !important;
+}
+
+.sidebar{
+  padding-bottom:0px;
+}
+body{
+  font-family: 'Poppins',sans-serif !important;
+}
+
+.badge {
+    display: inline-block;
+    padding: .5em .74em;
+    font-size: 75%;
+    text-align: center;
+    border-radius: .10px;
+}
+
+
+.icon-box{
+  height: 50px;
+  width: 50px;
+  border-radius: 30px;
+  color: #fff;
+  font-size: 20px;
+}
+
+.br-1{
+  border-radius: 20px !important;
+}
+
+.rounded-pill{
+  border-radius: 10px !important;
+  padding-left: 20px;
+  padding-right: 20px;
+  font-weight: 400 !important;
+}
+
+
+body{
+  background-color: #eff2f7 !important;
+  font-size: 13px !important;
+}
+
+.custom-list-item{
+  border-left:none !important;
+  border-right:0px !important;
+}
+
+.normal-case{
+  border-left:2px solid #4285f4 !important;
+}
+
+
+.titles {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+table th, table td {
+  font-size: 13px !important;
+}
+
+
+table.table-condensed thead th {
+  border-top: 1px #000 solid !important;
+  border-bottom: 1px #000 solid !important;
+}
