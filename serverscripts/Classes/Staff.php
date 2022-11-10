@@ -15,61 +15,6 @@
       $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
       $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
 
-        // Create relevant tables 
-
-        $sql="CREATE TABLE IF NOT EXISTS staff (
-          sn int NOT NULL,
-          subscriber_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-          staff_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-          category varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-          surname text COLLATE utf8_unicode_ci NOT NULL,
-          othernames text COLLATE utf8_unicode_ci NOT NULL,
-          phone_number text COLLATE utf8_unicode_ci NOT NULL,
-          address text COLLATE utf8_unicode_ci NOT NULL,
-          email text COLLATE utf8_unicode_ci NOT NULL,
-          emergency_contact text COLLATE utf8_unicode_ci NOT NULL,
-          specialisation text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-          accountant_rank text COLLATE utf8_unicode_ci NOT NULL,
-          nurse_rank text COLLATE utf8_unicode_ci NOT NULL,
-          role varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-          auth varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-          mail_verify int NOT NULL,
-          username varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-          password varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-          date date NOT NULL,
-          timestamp varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-          status varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'active',
-          permission varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-          last_login datetime NOT NULL,
-          PRIMARY KEY (sn)
-        ) ";
-
-        $this->mysqli->query($sql);
-
-        $sql="CREATE TABLE IF NOT EXISTS hr_categories (
-          sn int NOT NULL AUTO_INCREMENT,
-          alias varchar(19) COLLATE utf8_unicode_ci NOT NULL,
-          description text COLLATE utf8_unicode_ci NOT NULL,
-          PRIMARY KEY (sn)
-        )";
-
-        $this->mysqli->query($sql);
-
-        $sql="CREATE TABLE IF NOT EXISTS staff_attendance (
-          sn int NOT NULL AUTO_INCREMENT,
-          subscriber_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-          staff_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-          shift_type text COLLATE utf8_unicode_ci NOT NULL,
-          time_in datetime NOT NULL,
-          time_out datetime NOT NULL,
-          log_date date NOT NULL,
-          status text COLLATE utf8_unicode_ci NOT NULL,
-          PRIMARY KEY (sn)
-        )";
-
-        $this->mysqli->query($sql);
-        
-
         if(isset($_SESSION['active_subscriber'])){
           $this->active_subscriber=$_SESSION['active_subscriber'];
           $this->active_user=$_SESSION['active_user'];
@@ -94,7 +39,7 @@
     }//end construct
 
     function StaffIdGen(){
-      $query=mysqli_query($this->db,"SELECT COUNT(*) as count FROM users WHERE subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
+      $query=mysqli_query($this->db,"SELECT COUNT(*) as count FROM users") or die(mysqli_error($this->db));
       $count=mysqli_fetch_assoc($query);
       $count=++$count['count'];
       return 'USR'.prefix($count).''.$count;
@@ -104,7 +49,8 @@
       $sql="SELECT * FROM staff WHERE username='".$this->username."' AND password='".$this->password."'";
       $r=$this->mysqli->query($sql);
       if($r->num_rows ==1){
-        $info=$r->fetch_assoc();
+
+          $info=$r->fetch_assoc();
 
         	$role=$info['role'];
         	$user_fullname=$info['full_name'];
@@ -167,34 +113,32 @@
 
       $this->surname=$info['surname'];
       $this->othernames=$info['othernames'];
+      $this->address=$info['address'];
       $this->full_name=$info['surname'] .' '.$info['othernames'];
       $this->phone=$info['phone_number'];
       $this->email=$info['email'];
       $this->address=$info['address'];
-      $this->category=$info['category'];
+      $this->rank=$info['rank'];
       $this->role=$info['role'];
+      $this->title=$info['title'];
 
 
 
     }//end function UserInfo
 
-    function CreateNewUser($staff_id,$phone_number,$access_level,$username,$password){
+    function   Create($title, $rank, $role, $surname, $othernames, $phone_number, $address, $emergency_contact_person, $emergency_contact, $username, $password){
       $staff_id=$this->StaffIdGen();
         //Check if similar details exists
-      $check_exists=mysqli_query($this->db,"
-                                                            SELECT staff_id FROM staff
-                                                            WHERE
-                                                                (staff_id='".$staff_id."' AND subscriber_id='".$this->active_subscriber."')
-                                                                OR
-                                                                (subscriber_id='".$this->active_subscriber."' AND username='".$username."')
-                                                    ") or die(mysqli_error($this->db));
-      if(mysqli_num_rows($check_exists) >0){
-        return "Similar Information Exists";
+      $check="SELECT staff_id FROM staff WHERE username='".$username."' AND status='active'";
+      $r=$this->mysqli->query($check);
+      if($r->num_rows !=0){
+        return "Choose A Different Username";
       }
       else {
-          $table='users';
-          $fields=array("subscriber_id","user_id","staff_id","phone_number","role","username","password","date","status");
-          $values=array("$this->active_subscriber","$staff_id","$full_name","$phone_number","$access_level","$username","$password","$date","active");
+
+          $table='staff';
+          $fields=array("subscriber_id","staff_id","title","staff_rank","role","surname","othernames", "phone_number","address","emergency_contact_person","emergency_contact","username","password","date");
+          $values=array("$this->active_subscriber","$staff_id","$title","$rank","$role","$surname","$othernames", "$phone_number","$address","$emergency_contact_person","$emergency_contact","$username","$password","$this->today");
           $query=insert_data($this->db,$table,$fields,$values);
 
           if($query){
@@ -228,7 +172,7 @@
                                                             username='".$username."',
                                                             password='".$password."'
                                                           WHERE
-                                                            staff_id='".$user_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'
+                                                            staff_id='".$staff_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'
       ") or die(mysqli_error($this->db));
 
       if(mysqli_affected_rows($this->db)==1){

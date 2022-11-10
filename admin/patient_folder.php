@@ -1,263 +1,252 @@
 <?php require_once '../navigation/header.php'; ?>
 <?php require_once '../navigation/admin_nav.php'; ?>
 <?php
-	// ob_clean();
+// ob_clean();
 
-	if(isset($_SESSION['new_patient_id'])){
-		$patient_id=clean_string($_SESSION['new_patient_id']);
-	}elseif (isset($_GET['patient_id'])) {
-		$patient_id=clean_string($_GET['patient_id']);
-	}else {
-		?>
-		<script type="text/javascript">
-			window.location='findpatient.php';
-		</script>
+if (isset($_SESSION['new_patient_id'])) {
+	$patient_id = clean_string($_SESSION['new_patient_id']);
+} elseif (isset($_GET['patient_id'])) {
+	$patient_id = clean_string($_GET['patient_id']);
+} else {
+?>
+	<script type="text/javascript">
+		window.location = 'findpatient.php';
+	</script>
+<?php
+}
+
+
+// declare all classes 
+
+$p = new Patient();
+$visit = new Visit();
+$service = new Service();
+
+
+
+$p->patient_id = $patient_id;
+
+$visit->patient_id = $patient_id;
+
+
+
+$status = $p->PatientStatus();
+if ($status == 'deleted') {
+	header('location: patients.php');
+} else {
+	$p->PatientInfo();
+}
+?>
+
+<style media="screen">
+	#topbar {
+		background: rgb(12, 5, 143);
+		background: linear-gradient(87deg, rgba(12, 5, 143, 1) 0%, rgba(26, 26, 198, 1) 35%, rgba(0, 212, 255, 1) 100%);
+	}
+</style>
+
+
+
+<main class="py-1 mx-lg-5 main">
+	<div class="container-fluid py-4">
+
 		<?php
-	}
+		if ($status == 'deceased') {
+		?>
+			<div class="card danger-color-dark white-text m-0 mb-5">
+				<div class="card-body">
+					<h4 class="montserrat font-weight-bold">Notice</h4>
+					---------
+					<p>Sorry, Patient is Deceased.</p>
+				</div>
+			</div>
+		<?php
+		}
+		?>
 
-
-
-	$p=new Patient();
-	$visit=new Visit();
-	$p->patient_id=$patient_id;
-
-	$visit->patient_id=$patient_id;
-
-
-
-	$status=$p->PatientStatus();
-	if($status=='deleted'){
-		header('location: patients.php');
-	}else {
-		$p->PatientInfo();
-	}
- ?>
-
- <style media="screen">
- 	#topbar{
-		background: rgb(12,5,143);
-		background: linear-gradient(87deg, rgba(12,5,143,1) 0%, rgba(26,26,198,1) 35%, rgba(0,212,255,1) 100%);
-	}
- </style>
-
-
-
-		<main class="py-1 mx-lg-5 main" style="">
-			<div class="container-fluid pt-4">
-
-				<?php
-					if ($status=='deceased') {
-						?>
-						<div class="card danger-color-dark white-text m-0 mb-5">
-							<div class="card-body">
-								<h4 class="montserrat font-weight-bold">Notice</h4>
-								---------
-								<p>Sorry, Patient is Deceased.</p>
-							</div>
+		<div class="row">
+			<div class="col-md-6 ">
+				<h4 class="titles montserrat mb-5">Patient Profile </h4>
+			</div>
+			<div class="col-md-6 text-right mb-5 <?php if ($status == 'deceased') {
+														echo 'd-none';
+													} ?>">
+				<div class="btn-group">
+					<div class="dropdown ope n">
+						<button class="btn btn-primary btn-rounded dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Request Service
+						</button>
+						<div class="dropdown-menu b-0 p-0" aria-labelledby="dropdownMenu1">
+							<ul class="list-group">
+								<li class="list-group-item" data-toggle="modal" data-target="#new_visit_modal">Out-Patient Service</li>
+								<li class="list-group-item" data-toggle="modal" data-target="#">Walk-In Service</li>
+								<li class="list-group-item" data-toggle="modal" data-target="#">Antenatal Service</li>
+								<li class="list-group-item" data-toggle="modal" data-target="#">Dental Service</li>
+								<li class="list-group-item" data-toggle="modal" data-target="#">Book Specialist</li>
+								<li class="list-group-item" id="">Emergency Service</li>
+							</ul>
 						</div>
-						<?php
-					}
-				 ?>
-
-				<div class="row">
-					<div class="col-md-6 ">
-						<h4 class="titles montserrat mb-5">Patient Profile </h4>
-					</div>
-					<div class="col-md-6 text-right mb-5 <?php if($status=='deceased'){ echo 'd-none'; } ?>">
-						<div class="btn-group">
-							<div class="dropdown ope n">
-								<button class="btn btn-primary btn-rounded dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									Request Service
-								</button>
-								<div class="dropdown-menu b-0 p-0" aria-labelledby="dropdownMenu1">
-									<ul class="list-group">
-										<li class="list-group-item" data-toggle="modal" data-target="#new_visit_modal">Out-Patient Service</li>
-										<li class="list-group-item" data-toggle="modal" data-target="#">Walk-In Service</li>
-										<li class="list-group-item" data-toggle="modal" data-target="#">Antenatal Service</li>
-										<li class="list-group-item" data-toggle="modal" data-target="#">Dental Service</li>
-										<li class="list-group-item" data-toggle="modal" data-target="#">Book Specialist</li>
-										<li class="list-group-item" id="">Emergency Service</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-
-						<button type="button" class="btn btn-primary btn-rounded" data-toggle='modal' data-target="#edit_patient_modal"><i class="fas fa-pencil-alt mr-2" aria-hidden></i>Edit Info</button>
-
-						<button type="button" class="btn danger-color-dark btn-rounded" id="delete_patient_btn" ><i class="far fa-trash-alt mr-2" aria-hidden></i>Delete</button>
-
-
 					</div>
 				</div>
-				
-				
-				<div class="row">
-					<div class="col-md-4">
 
-						<div class="card mb-5">
-						  <div class="card-body pt-5">
+				<button type="button" class="btn btn-primary btn-rounded" data-toggle='modal' data-target="#edit_patient_modal"><i class="fas fa-pencil-alt mr-2" aria-hidden></i>Edit Info</button>
 
-							<div class="text-center">
-								<img class="" src=" 
-								<?php 
-								if ($p->sex=='male') {
+				<button type="button" class="btn danger-color-dark btn-rounded" id="delete_patient_btn"><i class="far fa-trash-alt mr-2" aria-hidden></i>Delete</button>
+
+
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-md-4">
+
+				<div class="card mb-5">
+					<div class="card-body pt-5">
+
+						<div class="text-center">
+							<img class="" src=" 
+								<?php
+								if ($p->sex == 'male') {
 									echo '../images/dummy_male.png';
 								} else {
 									echo '../images/dummy_female.png';
 								}
 								?> " alt="">
 
-								<h4 class="montserrat font-weight-bold mx-auto"><?php echo $p->patient_fullname; ?></h4>
+							<h4 class="montserrat font-weight-bold mx-auto"><?php echo $p->patient_fullname; ?></h4>
 
-								<p><i class="fa fa-map-marker" aria-hidden="true"></i> Address  </p>
-								<p><span style="font-weight:600"><?php echo $p->hse_address; ?></span></p>
-						<p><span style="font-weight:600"><?php echo $p->town; ?>, <?php echo $p->region; ?> </span></p>
+							<p><i class="fa fa-map-marker" aria-hidden="true"></i> Address </p>
+							<p><span style="font-weight:600"><?php echo $p->hse_address; ?></span></p>
+							<p><span style="font-weight:600"><?php echo $p->town; ?>, <?php echo $p->region; ?> </span></p>
 
-							</div>
-							
-						  </div>
 						</div>
 
-						<div class="card">
-						  <div class="card-body">
-							<h5 class="card-title">About</h5>
+					</div>
+				</div>
 
-							<div class="row">
-							
-							  <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">About</h5>
+
+						<div class="row">
+
+							<div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
 								<p>Sex</p>
 								<p style="font-size:14px; font-weight:500"> <?php echo ucfirst($p->sex); ?> </p>
-							  </div>
-							
-							  <div class="col-lg-5 mb-4 mb-lg-0">
-								<p>Age</p>
-								<p style="font-size:14px; font-weight:500"><?php echo $p->age; ?> </p>
-							  </div>
-							
 							</div>
 
-							<hr>
-							<p>Occupation</p>
-							<p style="font-size:14px; font-weight:500"><?php echo $p->occupation; ?></p>
-							<hr>
-							<p>Phone Number</p>
-							<p style="font-size:14px; font-weight:500"><?php echo $p->phone_number; ?></p>
-							<hr>
-							<p>Email Address</p>
-							<p style="font-size:14px; font-weight:500">Email@YourDomain.com</p>
-							<hr>
-							<p>Emergency Contact</p>
-							<p style="font-size:14px; font-weight:500"><?php echo $p->nearest_relative; ?> - <?php echo $p->relative_phone; ?> </p>
-							<hr>
+							<div class="col-lg-5 mb-4 mb-lg-0">
+								<p>Age</p>
+								<p style="font-size:14px; font-weight:500"><?php echo $p->age; ?> </p>
+							</div>
 
-							
-						  </div>
 						</div>
+
+						<hr>
+						<p>Occupation</p>
+						<p style="font-size:14px; font-weight:500"><?php echo $p->occupation; ?></p>
+						<hr>
+						<p>Phone Number</p>
+						<p style="font-size:14px; font-weight:500"><?php echo $p->phone_number; ?></p>
+						<hr>
+						<p>Email Address</p>
+						<p style="font-size:14px; font-weight:500">Email@YourDomain.com</p>
+						<hr>
+						<p>Emergency Contact</p>
+						<p style="font-size:14px; font-weight:500"><?php echo $p->nearest_relative; ?> - <?php echo $p->relative_phone; ?> </p>
+						<hr>
+
+
 					</div>
-					
-					<div class="col-md-8">
-						
-								<div class="card">
-								  <div class="card-body">
-									<h5 class="card-title mb-5">Appointments History</h5>
-									
-									<table class="table table-condensed">
-										<thead>
-											<tr>
-												<th>#</th>
-												<th>Date</th>
-												<th>Visit Type</th>
-												<th>Major Complaint</th>
-												<th>Doctor</th>
-												<th>Diagnosis</th>
-											</tr>
-										</thead>
-										<tbody>
-										<?php
-								$i=1;
-								
-								$patient_visits=$visit->PatientVisits();
+				</div>
+			</div>
+
+			<div class="col-md-8">
+
+				<div class="card" style="min-height: 850px;">
+					<div class="card-body">
+						<h5 class="card-title mb-5">Appointments History</h5>
+
+						<table class="table table-condensed">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Date</th>
+									<th>Visit Type</th>
+									<th>Major Complaint</th>
+									<th>Doctor</th>
+									<th>Diagnosis</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+								$i = 1;
+								$patient_visits = $visit->PatientVisits();
 								foreach ($patient_visits as $rows) {
 									switch ($rows['visit_type']) {
 										case 'new_visit':
-											$visit_type='New Visit';
+											$visit_type = 'New Visit';
 											break;
 										case 'review':
-											$visit_type='Review';
+											$visit_type = 'Review';
 											break;
 
 										default:
 											// code...
 											break;
 									}
-									$doctor_id=$rows['doctor_id'];
-									$doctor->doctor_id=$doctor_id;
-									$doctor->DoctorInfo();
 
-									$visit_id=$rows['visit_id'];
+
+									$visit_id = $rows['visit_id'];
 									$visit->VisitInfo($visit_id);
-									$primary_diagnosis=$visit->primary_diagnosis;
-									?>
-									<tr style="border-left:solid 4px <?php if($rows['status']=='active'){ echo '#0d47a1';}elseif($rows['status']=='discharged'){echo '#cc0000';} ?>">
-												<td scope="row"></td>
-												<td>
-													<p><?php echo $doctor->doctor_fullname; ?> </p>
-													<p class="text-muted poppins" style="font-size:11px"><?php echo $doctor->specialisation; ?>
-												</td>
-												<td><?php echo $rows['major_complaint']; ?></td>
-												<td>
-													<p><?php echo $visit->Diagnosis($primary_diagnosis); ?> <?php echo $visit->primary_diagnosis; ?></p>
-													<p class="text-muted poppins" style="font-size:11px"><?php echo $visit->secondary_diagnosis; ?></p>
-												</td>
-											</tr>
-									<div class="card mb-3" >
-										<div class="card-body">
-											<div class="row" style="font-size:13px; font-weight:500">
-												<div class="col-md-2">
-													<?php echo $rows['visit_date']; ?>
-												</div>
-												<div class="col-md-3">
-													
-													</p>
-												</div>
-												<div class="col-md-2">
-													
-												</div>
-												<div class="col-md-4">
-													
+									$primary_diagnosis = $visit->primary_diagnosis;
+								?>
+									<tr>
 
-												</div>
-												<div class="col-md-1 text-right">
-													<a href="singlevisit.php?visit_id=<?php echo $rows['visit_id']; ?>" class="">
-															<!-- <i class="fas fa-chevron-right text-primary fa-2x" aria-hidden></i> -->
-															<img src="../images/chevronright.svg" alt=""  style="width:20px; color:#f4f5f7">
-													</a>
-												</div>
-											</div>
-										</div>
-									</div>
+										<td><?php echo $i++; ?></td>
+										<td><?php echo $rows['visit_date']; ?></td>
+										<td scope="row">
+											<u>
+											<a href="singlevisit.php?visit_id=<?php echo $rows['visit_id']; ?>" class="">
+												<?php echo $rows['visit_id']; ?>
+											</a>
+											</u>
+										</td>
+										<td><?php echo $rows['major_complaint']; ?></td>
+										<td>
+											<p><?php //echo $doctor->doctor_fullname; ?> </p>
+											<p class="text-muted poppins" style="font-size:11px"><?php //echo $doctor->specialisation; ?>
+										</td>
+
+										<td>
+											<p><?php echo $visit->Diagnosis($primary_diagnosis); ?> <?php echo $visit->primary_diagnosis; ?></p>
+											<p class="text-muted poppins" style="font-size:11px"><?php echo $visit->secondary_diagnosis; ?></p>
+										</td>
+									</tr>
+									
 
 
-									<?php
+								<?php
 								}
-							 ?>
-											
-											<tr>
-												<td scope="row"></td>
-												<td></td>
-												<td></td>
-											</tr>
-										</tbody>
-									</table>
-								  </div>
-								</div>
+								?>
 
+								<tr>
+									<td scope="row"></td>
+									<td></td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
-				
 
 			</div>
-		</main>
+		</div>
+
+
+	</div>
+</main>
 
 
 
@@ -268,229 +257,228 @@
 </div>
 
 <div id="edit_patient_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" style="">
-    <div class="modal-content">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
 			<form id="edit_patient_frm">
-      <div class="modal-body">
+				<div class="modal-body">
 					<h5 class="font-weight-bold montserrat">Edit Patient Information</h5>
 					<hr class="hr">
 
 
 					<!-- Pills navs -->
-							<ul class="nav nav-pills mb-3 xmedici_pills" id="" role="tablist">
-							  <li class="nav-item" role="presentation">
-							    <a
-							      class="nav-link active"
-							      id="basic_info_tab"
-							      data-toggle="pill"
-							      href="#basic_info"
-							      role="tab"
-							      aria-controls="basic_info"
-							      aria-selected="true"
-							      >Basic Information</a
-							    >
-							  </li>
-							  <li class="nav-item" role="presentation">
-							    <a
-							      class="nav-link"
-							      id="contactinfo_tab"
-							      data-toggle="pill"
-							      href="#contactinfo"
-							      role="tab"
-							      aria-controls="contactinfo"
-							      aria-selected="false"
-							      >Contact Info</a
-							    >
-							  </li>
-							  <li class="nav-item" role="presentation">
-							    <a
-							      class="nav-link"
-							      id="relativeinfo_tab"
-							      data-toggle="pill"
-							      href="#relativeinfo"
-							      role="tab"
-							      aria-controls="relativeinfo"
-							      aria-selected="false"
-							      >Relatives & Payment </a
-							    >
-							  </li>
-							</ul>
-							<!-- Pills navs -->
+					<ul class="nav nav-pills mb-3 xmedici_pills" id="" role="tablist">
+						<li class="nav-item" role="presentation">
+							<a class="nav-link active" id="basic_info_tab" data-toggle="pill" href="#basic_info" role="tab" aria-controls="basic_info" aria-selected="true">Basic Information</a>
+						</li>
+						<li class="nav-item" role="presentation">
+							<a class="nav-link" id="contactinfo_tab" data-toggle="pill" href="#contactinfo" role="tab" aria-controls="contactinfo" aria-selected="false">Contact Info</a>
+						</li>
+						<li class="nav-item" role="presentation">
+							<a class="nav-link" id="relativeinfo_tab" data-toggle="pill" href="#relativeinfo" role="tab" aria-controls="relativeinfo" aria-selected="false">Relatives & Payment </a>
+						</li>
+					</ul>
+					<!-- Pills navs -->
 
-							<!-- Pills content -->
-							<div class="tab-content" id="ex1-content">
-							  <div  class="tab-pane fade show active pt-4"   id="basic_info"    role="tabpanel"    aria-labelledby="basic_info_tab" >
+					<!-- Pills content -->
+					<div class="tab-content" id="ex1-content">
+						<div class="tab-pane fade show active pt-4" id="basic_info" role="tabpanel" aria-labelledby="basic_info_tab">
 
-									<div class="d-none">
-										<input type="text" name="patient_id" value="<?php echo $patient_id; ?>">
+							<div class="d-none">
+								<input type="text" name="patient_id" value="<?php echo $patient_id; ?>">
+							</div>
+							<div class="row poppins">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="">Surname</label>
+										<input type="text" class="form-control" name="surname" id="surname" value="<?php echo $p->surname; ?>">
 									</div>
-									<div class="row poppins">
-									  <div class="col-md-6">
-									    <div class="form-group">
-												<label for="">Surname</label>
-												<input type="text" class="form-control" name="surname" id="surname" value="<?php echo $p->surname; ?>">
-									    </div>
-									  </div>
-									  <div class="col-md-6">
-											<div class="form-group">
-												<label for="">Othernames</label>
-												<input type="text" class="form-control" name="othernames" id="othernames" value="<?php echo $p->othernames; ?>">
-									    </div>
-									  </div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="">Othernames</label>
+										<input type="text" class="form-control" name="othernames" id="othernames" value="<?php echo $p->othernames; ?>">
 									</div>
+								</div>
+							</div>
 
+							<div class="row">
+								<div class="col-md-6">
 									<div class="row">
-									  <div class="col-md-6">
-											<div class="row">
-												<div class="col-md-6">
-													<div class="form-group">
-														<label for="">Date Of Birth</label>
-														<input type="text" class="form-control" name="date_of_birth" id="date_of_birth" value="<?php echo $p->date_of_birth; ?>">
-											    </div>
-												</div>
-												<div class="col-md-6">
-													<div class="form-group">
-														<label for="">Sex</label>
-														<select class="custom-select browser-default" name="sex">
-																<option value="male" <?php if($p->sex=='male'){ echo 'selected' ;} ?>>Male</option>
-																<option value="female" <?php if($p->sex=='female'){ echo 'selected' ;} ?>>Female</option>
-														</select>
-											    </div>
-												</div>
-											</div>
-
-									  </div>
-									  <div class="col-md-6">
-											<div class="row">
-												<div class="col-md-6">
-													<div class="form-group">
-														<label for="">Religion</label>
-														<select class="custom-select browser-default" name="religion" id="religion">
-															<option value="Christian" <?php if($p->religion=='Christian'){ echo 'selected' ;} ?>>Christian</option>
-															<option value="Muslim" <?php if($p->religion=='Muslim'){ echo 'selected' ;} ?>>Muslim</option>
-															<option value="Jew" <?php if($p->religion	=='Jew'){ echo 'selected' ;} ?>>Jew</option>
-															<option value="Atheist" <?php if($p->religion=='Atheist'){ echo 'selected' ;} ?>>Atheist</option>
-															<option value="Other" <?php if($p->religion=='Other'){ echo 'selected' ;} ?>>Other</option>
-														</select>
-													</div>
-												</div>
-												<div class="col-md-6">
-													<div class="form-group">
-														<label for="">Marital Status</label>
-														<select class="custom-select browser-default" name="marital_status" id="marital_status">
-															<option value="single" <?php if($p->marital_status=='single'){ echo 'selected' ;} ?>>Single</option>
-															<option value="married" <?php if($p->marital_status=='married'){ echo 'selected' ;} ?>>Married</option>
-															<option value="divorced" <?php if($p->marital_status=='divorced'){ echo 'selected' ;} ?>>Divorced</option>
-															<option value="widowed" <?php if($p->marital_status=='widowed'){ echo 'selected' ;} ?>>Widowed</option>
-														</select>
-													</div>
-												</div>
-											</div>
-									  </div>
-									</div>
-
-							  </div>
-							  <div class="tab-pane fade pt-4" id="contactinfo" role="tabpanel" aria-labelledby="contactinfo_tab">
-
-									<div class="row poppins">
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="">House Address</label>
-												<input type="text" class="form-control" name="hse_address" id="hse_address" value="<?php echo $p->hse_address; ?>">
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="row">
-												<div class="col-6">
-													<div class="form-group">
-														<label for="">Town</label>
-														<input type="text" class="form-control" name="town" id="town" value="<?php echo $p->town; ?>">
-													</div>
-												</div>
-												<div class="col-6">
-													<div class="form-group">
-														<label for="">Region</label>
-														<input type="text" class="form-control" name="region" id="region" value="<?php echo $p->region; ?>">
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="row poppins">
-										<div class="col-md-6">
-											<div class="row">
-												<div class="col-6">
-													<div class="form-group">
-														<label for="">Primary Phone Number</label>
-														<input type="text" class="form-control" name="phone_number" id="phone_number" value="<?php echo $p->phone_number; ?>">
-													</div>
-												</div>
-												<div class="col-6">
-													<div class="form-group">
-														<label for="">Secondary Phone Number</label>
-														<input type="text" class="form-control" name="phone_number2" id="phone_number2" value="<?php echo $p->secondary_phone; ?>">
-													</div>
-												</div>
-											</div>
-
-										</div>
-										<div class="col-md-6">
-											<div class="row poppins">
-												<div class="col-md-6">
-													<div class="form-group">
-														<label for="">Hometown</label>
-														<input type="text" class="form-control" name="hometown" id="hometown" value="<?php echo $p->hometown; ?>">
-													</div>
-												</div>
-												<div class="col-md-6">
-													<div class="form-group">
-														<label for="">Occupation</label>
-														<input type="text" class="form-control" name="ethnicity" id="ethnicity" value="<?php echo $p->occupation; ?>">
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-
-							  </div>
-							  <div class="tab-pane fade pt-4" id="relativeinfo" role="tabpanel" aria-labelledby="relativeinfo_tab">
-
-									<div class="row poppins">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label for="">Name Of Nearest Relative</label>
-												<input type="text" class="form-control" name="nearest_relative" id="nearest_relative" value="<?php echo $p->nearest_relative; ?>">
+												<label for="">Date Of Birth</label>
+												<input type="text" class="form-control" name="date_of_birth" id="date_of_birth" value="<?php echo $p->date_of_birth; ?>">
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="">Relative's Phone</label>
-												<input type="text" class="form-control" name="relative_phone" id="relative_phone" value="<?php echo $p->relative_phone; ?>">
+												<label for="">Sex</label>
+												<select class="custom-select browser-default" name="sex">
+													<option value="male" <?php if ($p->sex == 'male') {
+																				echo 'selected';
+																			} ?>>Male</option>
+													<option value="female" <?php if ($p->sex == 'female') {
+																				echo 'selected';
+																			} ?>>Female</option>
+												</select>
 											</div>
 										</div>
 									</div>
 
-									<div class="row poppins">
+								</div>
+								<div class="col-md-6">
+									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="">Payment Mode</label>
-												<select class="custom-select browser-default" name="payment_mode" id="payment_mode" value="">
-													<option value="cash" <?php if($p->payment_mode=='cash'){ echo 'selected' ;} ?>>Cash</option>
-													<option value="nhis" <?php if($p->payment_mode=='nhis'){ echo 'selected' ;} ?>>NHIS</option>
+												<label for="">Religion</label>
+												<select class="custom-select browser-default" name="religion" id="religion">
+													<option value="Christian" <?php if ($p->religion == 'Christian') {
+																					echo 'selected';
+																				} ?>>Christian</option>
+													<option value="Muslim" <?php if ($p->religion == 'Muslim') {
+																				echo 'selected';
+																			} ?>>Muslim</option>
+													<option value="Jew" <?php if ($p->religion	== 'Jew') {
+																			echo 'selected';
+																		} ?>>Jew</option>
+													<option value="Atheist" <?php if ($p->religion == 'Atheist') {
+																				echo 'selected';
+																			} ?>>Atheist</option>
+													<option value="Other" <?php if ($p->religion == 'Other') {
+																				echo 'selected';
+																			} ?>>Other</option>
 												</select>
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
-												<label for="">NHIS Number</label>
-												<input type="text" class="form-control" name="nhis_number" id="nhis_number" value="<?php echo $p->nhis_number; ?>">
+												<label for="">Marital Status</label>
+												<select class="custom-select browser-default" name="marital_status" id="marital_status">
+													<option value="single" <?php if ($p->marital_status == 'single') {
+																				echo 'selected';
+																			} ?>>Single</option>
+													<option value="married" <?php if ($p->marital_status == 'married') {
+																				echo 'selected';
+																			} ?>>Married</option>
+													<option value="divorced" <?php if ($p->marital_status == 'divorced') {
+																					echo 'selected';
+																				} ?>>Divorced</option>
+													<option value="widowed" <?php if ($p->marital_status == 'widowed') {
+																				echo 'selected';
+																			} ?>>Widowed</option>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="tab-pane fade pt-4" id="contactinfo" role="tabpanel" aria-labelledby="contactinfo_tab">
+
+							<div class="row poppins">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="">House Address</label>
+										<input type="text" class="form-control" name="hse_address" id="hse_address" value="<?php echo $p->hse_address; ?>">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="row">
+										<div class="col-6">
+											<div class="form-group">
+												<label for="">Town</label>
+												<input type="text" class="form-control" name="town" id="town" value="<?php echo $p->town; ?>">
+											</div>
+										</div>
+										<div class="col-6">
+											<div class="form-group">
+												<label for="">Region</label>
+												<input type="text" class="form-control" name="region" id="region" value="<?php echo $p->region; ?>">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row poppins">
+								<div class="col-md-6">
+									<div class="row">
+										<div class="col-6">
+											<div class="form-group">
+												<label for="">Primary Phone Number</label>
+												<input type="text" class="form-control" name="phone_number" id="phone_number" value="<?php echo $p->phone_number; ?>">
+											</div>
+										</div>
+										<div class="col-6">
+											<div class="form-group">
+												<label for="">Secondary Phone Number</label>
+												<input type="text" class="form-control" name="phone_number2" id="phone_number2" value="<?php echo $p->secondary_phone; ?>">
 											</div>
 										</div>
 									</div>
 
-							  </div>
+								</div>
+								<div class="col-md-6">
+									<div class="row poppins">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="">Hometown</label>
+												<input type="text" class="form-control" name="hometown" id="hometown" value="<?php echo $p->hometown; ?>">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="">Occupation</label>
+												<input type="text" class="form-control" name="ethnicity" id="ethnicity" value="<?php echo $p->occupation; ?>">
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
-							<!-- Pills content -->
+
+						</div>
+						<div class="tab-pane fade pt-4" id="relativeinfo" role="tabpanel" aria-labelledby="relativeinfo_tab">
+
+							<div class="row poppins">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="">Name Of Nearest Relative</label>
+										<input type="text" class="form-control" name="nearest_relative" id="nearest_relative" value="<?php echo $p->nearest_relative; ?>">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="">Relative's Phone</label>
+										<input type="text" class="form-control" name="relative_phone" id="relative_phone" value="<?php echo $p->relative_phone; ?>">
+									</div>
+								</div>
+							</div>
+
+							<div class="row poppins">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="">Payment Mode</label>
+										<select class="custom-select browser-default" name="payment_mode" id="payment_mode" value="">
+											<option value="cash" <?php if ($p->payment_mode == 'cash') {
+																		echo 'selected';
+																	} ?>>Cash</option>
+											<option value="nhis" <?php if ($p->payment_mode == 'nhis') {
+																		echo 'selected';
+																	} ?>>NHIS</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="">NHIS Number</label>
+										<input type="text" class="form-control" name="nhis_number" id="nhis_number" value="<?php echo $p->nhis_number; ?>">
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<!-- Pills content -->
 
 
 
@@ -498,16 +486,16 @@
 
 
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" data-dismiss="modal" class="btn btn-white">Close</button>
-        <button type="submit" class="btn primary-color-dark">
-					<i class="fas fa-check mr-3"></i>
-					Update Patient</button>
-      </div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" class="btn btn-white">Close</button>
+					<button type="submit" class="btn primary-color-dark">
+						<i class="fas fa-check mr-3"></i>
+						Update Patient</button>
+				</div>
 			</form>
-    </div>
-  </div>
+		</div>
+	</div>
 </div>
 
 
@@ -519,94 +507,94 @@
 		<div class="modal-content">
 
 			<form id="transfer_patient_frm">
-			<div class="modal-body">
-				<h6 class="font-weight-bold montserrat">Transfer Patient Folder</h6>
-				<hr class="hr">
+				<div class="modal-body">
+					<h6 class="font-weight-bold montserrat">Transfer Patient Folder</h6>
+					<hr class="hr">
 
-				<div class="form-group d-none">
-					<input type="text" class="form-control" id="visit_patient_id" name="patient_id" value="<?php echo $patient_id; ?>" readonly>
-				</div>
+					<div class="form-group d-none">
+						<input type="text" class="form-control" id="visit_patient_id" name="patient_id" value="<?php echo $patient_id; ?>" readonly>
+					</div>
 
-				<div class="form-group">
-				<label for="">Visit</label>
-				<select class="browser-default custom-select" name="visit_id">
-					<?php
-						$get_visits=mysqli_query($db,"SELECT * FROM visits WHERE patient_id='".$patient_id."' AND subscriber_id='".$active_subscriber."' AND status='active'") or die(mysqli_error($db));
-						while ($visits=mysqli_fetch_array($get_visits)) {
-							?>
-							<option value="<?php echo $visits['visit_id']; ?>"><?php echo $visits['visit_id']; ?></option>
+					<div class="form-group">
+						<label for="">Visit</label>
+						<select class="browser-default custom-select" name="visit_id">
 							<?php
-						}
-					 ?>
-
-				</select>
-				</div>
-
-				<div class="form-group">
-				<label for="">Transfer to</label>
-				<select class="browser-default custom-select" name="department_id">
-					<?php
-						$get_departments=mysqli_query($db,"SELECT * FROM syst_departments") or die(mysqli_error($db));
-						while ($departments=mysqli_fetch_array($get_departments)) {
+							$get_visits = mysqli_query($db, "SELECT * FROM visits WHERE patient_id='" . $patient_id . "' AND subscriber_id='" . $active_subscriber . "' AND status='active'") or die(mysqli_error($db));
+							while ($visits = mysqli_fetch_array($get_visits)) {
 							?>
-							<option value="<?php echo $departments['department_id']; ?>"><?php echo $departments['department_name']; ?></option>
+								<option value="<?php echo $visits['visit_id']; ?>"><?php echo $visits['visit_id']; ?></option>
 							<?php
-						}
-					 ?>
+							}
+							?>
 
-				</select>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="">Transfer to</label>
+						<select class="browser-default custom-select" name="department_id">
+							<?php
+							$get_departments = mysqli_query($db, "SELECT * FROM syst_departments") or die(mysqli_error($db));
+							while ($departments = mysqli_fetch_array($get_departments)) {
+							?>
+								<option value="<?php echo $departments['department_id']; ?>"><?php echo $departments['department_name']; ?></option>
+							<?php
+							}
+							?>
+
+						</select>
+					</div>
+
 				</div>
-
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-				<button type="submit" class="btn btn-primary">Transfer Patient</button>
-			</div>
-		</form>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary">Transfer Patient</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
 
 
 <div id="new_visit_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
+	<div class="modal-dialog">
+		<div class="modal-content">
 			<form id="new_visit_frm">
-	      <div class="modal-body">
-	        <h6>New Patient Visit</h6>
+				<div class="modal-body">
+					<h6>New Patient Visit</h6>
 					<hr class="hr">
 
 					<div class="row d-none">
-					  <div class="col-md-6">
-					    	<input type="text" name="patient_id" value="<?php echo $patient_id; ?>">
-					  </div>
-					  <div class="col-md-6">
+						<div class="col-md-6">
+							<input type="text" name="patient_id" value="<?php echo $patient_id; ?>">
+						</div>
+						<div class="col-md-6">
 
-					  </div>
+						</div>
 					</div>
 
 					<div class="spacer"></div>
 					<div class="row mb-3">
-					  <div class="col-md-6">
+						<div class="col-md-6">
 							<label for="">Visit Type</label>
 							<select class="custom-select browser-default" name="visit_type">
 								<option value="new_visit">New Visit</option>
 								<option value="review">Review</option>
 							</select>
-					  </div>
-					  <div class="col-md-6">
+						</div>
+						<div class="col-md-6">
 							<label for="">Billing</label>
 							<select class="custom-select browser-default" name="service_id">
 								<?php
-									$get_services=$query=mysqli_query($db,"SELECT * FROM services WHERE subscriber_id='".$active_subscriber."' AND billing_point='appointment' AND status='active'") or die(mysqli_error($db));
-									while ($services=mysqli_fetch_array($get_services)) {
-										?>
-											<option value="<?php echo $services['service_id']; ?>"><?php echo $services['description']; ?></option>
-										<?php
-									}
-								 ?>
+								$rows = $service->servicesFilter('registration');
+								foreach ($rows as $services) {
+								?>
+									<option value="<?php echo $services['service_id']; ?>"><?php echo $services['description']; ?></option>
+								<?php
+								}
+								?>
 							</select>
-					  </div>
+						</div>
 					</div>
 
 					<div class="form-group">
@@ -615,112 +603,107 @@
 					</div>
 
 
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
-	        <button type="submit" class="btn btn-primary">Create Visit</button>
-	      </div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-white" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary">Create Visit</button>
+				</div>
 			</form>
 		</div>
-  </div>
+	</div>
 </div>
 
 </body>
 
-    <!--   Core JS Files   -->
-    <?php require_once '../navigation/footer.php'; ?>
+<!--   Core JS Files   -->
+<?php require_once '../navigation/footer.php'; ?>
 
-	<script type="text/javascript">
-		$('.sidebar-fixed .list-group-item').removeClass('active')
-		$('#patients_nav').addClass('active')
-		$('#patients_submenu').addClass('show')
-		$('#patients_li').addClass('font-weight-bold')
+<script type="text/javascript">
+	$('.sidebar-fixed .list-group-item').removeClass('active')
+	$('#patients_nav').addClass('active')
+	$('#patients_submenu').addClass('show')
+	$('#patients_li').addClass('font-weight-bold')
 
-		$('.select2').select2({
-        dropdownParent: $('#hidden_menu_modal')
-    });
-
-
+	$('.select2').select2({
+		dropdownParent: $('#hidden_menu_modal')
+	});
 
 
-		$('#edit_patient_frm').on('submit', function(event) {
-			event.preventDefault();
-			bootbox.confirm('Update patient info?',function(r){
-				if(r===true){
-					$.ajax({
-						url: '../serverscripts/admin/Patients/edit_patient_frm	.php',
-						type: 'GET',
-						data:$('#edit_patient_frm').serialize(),
-						success:function(msg){
-							if(msg==='update_successful'){
-								bootbox.alert('Patient info updated successfully',function(){
-									window.location.reload()
-								})
-							}else {
-								bootbox.alert(msg)
-							}
-						}
-					})
-				}
-			})
-		});
 
-		$('#delete_patient_btn').on('click', function(event) {
-			event.preventDefault();
-			var patient_id='<?php echo $patient_id; ?>';
-			bootbox.confirm('Permanently delete this patient?',function(r){
-				if(r===true){
-					$.get('../serverscripts/admin/Patients/delete_patient.php?patient_id='+patient_id,function(msg){
-						if(msg==='delete_successful'){
-							window.location.reload()
-						}else {
+
+	$('#edit_patient_frm').on('submit', function(event) {
+		event.preventDefault();
+		bootbox.confirm('Update patient info?', function(r) {
+			if (r === true) {
+				$.ajax({
+					url: '../serverscripts/admin/Patients/edit_patient_frm	.php',
+					type: 'GET',
+					data: $('#edit_patient_frm').serialize(),
+					success: function(msg) {
+						if (msg === 'update_successful') {
+							bootbox.alert('Patient info updated successfully', function() {
+								window.location.reload()
+							})
+						} else {
 							bootbox.alert(msg)
 						}
-					})
-				}
-			})
-		});
+					}
+				})
+			}
+		})
+	});
+
+	$('#delete_patient_btn').on('click', function(event) {
+		event.preventDefault();
+		var patient_id = '<?php echo $patient_id; ?>';
+		bootbox.confirm('Permanently delete this patient?', function(r) {
+			if (r === true) {
+				$.get('../serverscripts/admin/Patients/delete_patient.php?patient_id=' + patient_id, function(msg) {
+					if (msg === 'delete_successful') {
+						window.location.reload()
+					} else {
+						bootbox.alert(msg)
+					}
+				})
+			}
+		})
+	});
 
 
 
-		$('#new_visit_frm').on('submit', function(event) {
-			event.preventDefault();
-			bootbox.confirm('Create new OPD Visit?',function(r){
-				if(r===true){
-					$.ajax({
-						url: '../serverscripts/admin/Patients/new_visit_frm.php',
-						type: 'GET',
-						data:$('#new_visit_frm').serialize(),
-						success:function(msg){
-							if(msg==='save_successful'){
-								bootbox.alert('Visit created successfully',function(){
-									window.location.reload()
-								})
-							}else {
-								bootbox.alert(msg)
-							}
+	$('#new_visit_frm').on('submit', function(event) {
+		event.preventDefault();
+		bootbox.confirm('Create new OPD Visit?', function(r) {
+			if (r === true) {
+				$.ajax({
+					url: '../serverscripts/admin/Patients/new_visit_frm.php',
+					type: 'GET',
+					data: $('#new_visit_frm').serialize(),
+					success: function(msg) {
+						if (msg === 'save_successful') {
+							bootbox.alert('Visit created successfully', function() {
+								window.location.reload()
+							})
+						} else {
+							bootbox.alert(msg)
 						}
-					})
-				}
-			})
-		});
+					}
+				})
+			}
+		})
+	});
 
 
 
-		$('.view_report').on('click', function(event) {
-			event.preventDefault();
-			var patient_id=$(this).data('patient_id')
-			var visit_id=$(this).data('visit_id')
-			$.get('../serverscripts/admin/OPD/visit_report.php?patient_id='+patient_id+'&visit_id='+visit_id,function(msg){
-				$('#modal_holder').html(msg)
-				$('#visit_report_modal').modal('show')
-			})
-		});
-
-
-
-
-
-	</script>
+	$('.view_report').on('click', function(event) {
+		event.preventDefault();
+		var patient_id = $(this).data('patient_id')
+		var visit_id = $(this).data('visit_id')
+		$.get('../serverscripts/admin/OPD/visit_report.php?patient_id=' + patient_id + '&visit_id=' + visit_id, function(msg) {
+			$('#modal_holder').html(msg)
+			$('#visit_report_modal').modal('show')
+		})
+	});
+</script>
 
 </html>

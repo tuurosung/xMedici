@@ -90,7 +90,7 @@
       $this->marital_status=$patient_info['marital_status'];
       $this->nearest_relative=$patient_info['nearest_relative'];
       $this->relative_phone=$patient_info['relative_phone'];
-      $this->nhis_status=$patient_info['nhis_status'];
+      $this->payment_mode=$patient_info['payment_mode'];
       $this->nhis_number=$patient_info['nhis_number'];
       $this->status=$patient_info['status'];
 

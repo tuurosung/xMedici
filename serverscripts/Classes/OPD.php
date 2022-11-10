@@ -12,25 +12,6 @@
       $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
       $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
 
-      $sql="CREATE TABLE IF NOT EXISTS visits (
-        sn int NOT NULL AUTO_INCREMENT,
-        subscriber_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        patient_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        visit_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        visit_type varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-        visit_date date NOT NULL,
-        doctor_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-        major_complaint text COLLATE utf8_unicode_ci NOT NULL,
-        primary_diagnosis varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        secondary_diagnosis varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        status varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        department_id varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-        admission_status text COLLATE utf8_unicode_ci NOT NULL,
-        timestamp varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-        PRIMARY KEY (sn)
-      )";
-
-      $this->mysqli->query($sql);
 
       if(!isset($_SESSION['active_subscriber']) || !isset($_SESSION['active_user']) || $_SESSION['active_subscriber']=='' || $_SESSION['active_user']==''){
         die('session_expired');
@@ -43,20 +24,20 @@
       $this->today=date('Y-m-d');
       $this->timestamp=time();
 
-      $count_visits=mysqli_query($this->db,"SELECT COUNT(*) as total_visit_count FROM visits WHERE status!='deleted' AND subscriber_id='".$this->active_subscriber."'") or die(msyqli_error($this->db));
+      $count_visits=mysqli_query($this->db,"SELECT COUNT(*) as total_visit_count FROM visits WHERE status!='deleted' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count_visits=mysqli_fetch_array($count_visits);
       $this->total_visit_count=$count_visits['total_visit_count'];
 
 
-      $count_active_opd=mysqli_query($this->db,"SELECT COUNT(*) as active_opd_cases FROM visits WHERE status='active' AND subscriber_id='".$this->active_subscriber."'") or die(msyqli_error($this->db));
+      $count_active_opd=mysqli_query($this->db,"SELECT COUNT(*) as active_opd_cases FROM visits WHERE status='active' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count_active_opd=mysqli_fetch_array($count_active_opd);
       $this->active_opd_cases=$count_active_opd['active_opd_cases'];
 
-      $count_discharged=mysqli_query($this->db,"SELECT COUNT(*) as discharged FROM visits WHERE status='discharged' AND subscriber_id='".$this->active_subscriber."'") or die(msyqli_error($this->db));
+      $count_discharged=mysqli_query($this->db,"SELECT COUNT(*) as discharged FROM visits WHERE status='discharged' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count_discharged=mysqli_fetch_array($count_discharged);
       $this->discharged=$count_discharged['discharged'];
 
-      $count_active_admissions=mysqli_query($this->db,"SELECT COUNT(*) as active_admissions FROM admissions WHERE admission_status='admitted' AND subscriber_id='".$this->active_subscriber."'") or die(msyqli_error($this->db));
+      $count_active_admissions=mysqli_query($this->db,"SELECT COUNT(*) as active_admissions FROM admissions WHERE admission_status='admitted' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count_active_admissions=mysqli_fetch_array($count_active_admissions);
       $this->active_admissions=$count_active_admissions['active_admissions'];
 
@@ -232,44 +213,61 @@
 
       $query_vitals="SELECT * FROM vitals WHERE visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'";
       $r=$this->mysqli->query($query_vitals);
-      $vitals=$r->fetch_assoc();
-      $this->systolic=$vitals['systolic'];
-      $this->diastolic=$vitals['diastolic'];
-      $this->weight=$vitals['weight'];
-      $this->temperature=$vitals['temperature'];
-      $this->pulse=$vitals['pulse'];
+      if($r->num_rows !=0){
+        $vitals = $r->fetch_assoc();
+        $this->systolic = $vitals['systolic'];
+        $this->diastolic = $vitals['diastolic'];
+        $this->weight = $vitals['weight'];
+        $this->temperature = $vitals['temperature'];
+        $this->pulse = $vitals['pulse'];
+      } else {
+        $this->systolic='N/A';
+        $this->diastolic = 'N/A';
+        $this->weight = 'N/A';
+        $this->temperature = 'N/A';
+        $this->pulse ='N/A';
+      }
 
-      $get_diagnosis=mysqli_query($this->db,"SELECT * FROM patient_diagnosis WHERE visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
-      $diagnosis_info=mysqli_fetch_array($get_diagnosis);
-      $this->primary_diagnosis=$diagnosis_info['diagnosis_id'];
-      $update_primary="UPDATE visits SET primary_diagnosis='".$this->primary_diagnosis."' WHERE visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."'";
-      $this->mysqli->query($update_primary);
+      $get_diagnosis="SELECT * FROM patient_diagnosis WHERE visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."'";
+      $r=$this->mysqli->query($get_diagnosis);
+      if($r->num_rows !=0){
+          $diagnosis_info = $r->fetch_assoc();
+          $this->primary_diagnosis = $diagnosis_info['diagnosis_id'];
+          $update_primary = "UPDATE visits SET primary_diagnosis='" . $this->primary_diagnosis . "' WHERE visit_id='" . $visit_id . "' AND subscriber_id='" . $this->active_subscriber . "'";
+          $this->mysqli->query($update_primary);
+      }      
 
-      $get_diagnosis=mysqli_query($this->db,"SELECT * FROM patient_secondary_diagnosis WHERE visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
-      $diagnosis_info=mysqli_fetch_array($get_diagnosis);
-      $this->secondary_diagnosis=$diagnosis_info['diagnosis'];
-      $update_secondary="UPDATE visits SET secondary_diagnosis='".$this->secondary_diagnosis."' WHERE visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."'";
-      $this->mysqli->query($update_secondary);
+      $get_diagnosis="SELECT * FROM patient_secondary_diagnosis WHERE visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."'";
+      $r=$this->mysqli->query($get_diagnosis);
+      if($r->num_rows !=0){
+        $r->fetch_assoc();
+        $this->secondary_diagnosis = $diagnosis_info['diagnosis'];
+        $update_secondary = "UPDATE visits SET secondary_diagnosis='" . $this->secondary_diagnosis . "' WHERE visit_id='" . $visit_id . "' AND subscriber_id='" . $this->active_subscriber . "'";
+        $this->mysqli->query($update_secondary);
+      }      
     }
 
 
     function RecordVitals($visit_id,$patient_id,$systolic,$diastolic,$pulse,$weight,$temperature,$doctor_id){
       $update_visit=mysqli_query($this->db,"UPDATE visits SET doctor_id='".$doctor_id."' WHERE visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'") or die(mysqli_error($this->db));
-      $query=mysqli_query($this->db,"UPDATE vitals
-                                                         SET
-                                                          systolic='".$systolic."',
-                                                          diastolic='".$diastolic."',
-                                                          pulse='".$pulse."',
-                                                          weight='".$weight."',
-                                                          temperature='".$temperature."'
-                                                        WHERE
-                                                          patient_id='".$patient_id."' AND visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."'
-                                      ") or die(mysqli_error($this->db));
-        if(mysqli_affected_rows($this->db)==1){
-          return 'save_successful';
-        }else {
-          return 'Patient vitals not updated';
+      $check= "SELECT * FROM vitals WHERE patient_id='" . $patient_id . "' AND visit_id='" . $visit_id . "' AND subscriber_id='" . $this->active_subscriber . "'";
+      $r=$this->mysqli->query($check);
+      if($r->num_rows==1){
+        $query = mysqli_query($this->db, "UPDATE vitals SET  systolic='" . $systolic . "',  diastolic='" . $diastolic . "',  pulse='" . $pulse . "',  weight='" . $weight . "', temperature='" . $temperature . "' WHERE  patient_id='" . $patient_id . "' AND visit_id='" . $visit_id . "' AND subscriber_id='" . $this->active_subscriber . "' ") or die(mysqli_error($this->db));
+        if (mysqli_affected_rows($this->db) == 1) {
+            return 'save_successful';
+        } else {
+            return 'Patient vitals not updated';
         }
+      }else {
+        // create vitals
+        $table = 'vitals';
+        $fields = array("subscriber_id", "visit_id", "patient_id","systolic","diastolic","pulse","weight","temperature", "status");
+        $values = array("$this->active_subscriber", "$visit_id", "$patient_id","$systolic","$diastolic","$pulse","$weight","$temperature", "active");
+        $query = insert_data($this->db, $table, $fields, $values);
+        return "save_successful";
+      }
+      
     }
 
 

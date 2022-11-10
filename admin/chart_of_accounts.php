@@ -369,7 +369,7 @@
     $('#new_account_frm').on('submit', function(event) {
       event.preventDefault();
       $.ajax({
-        url: '../serverscripts/admin/new_account_frm.php',
+        url: '../serverscripts/admin/Accounts/new_account_frm.php',
         type: 'GET',
         data:$('#new_account_frm').serialize(),
         success:function(msg){

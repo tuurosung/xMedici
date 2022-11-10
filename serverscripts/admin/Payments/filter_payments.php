@@ -19,7 +19,7 @@ $pmt=new Payment();
 
  ?>
 
- <h6 class="montserrat font-weight-bold">Payments Received From <?php echo date('d-M-Y',strtotime($start_date)); ?></h6>
+ <h6 class="montserrat font-weight-bold">Payments Received From <?php echo date('d-M-Y',strtotime($start_date)); ?> To <?php echo date('d-M-Y',strtotime($end_date)); ?></h6>
  <hr class="hr mb-5">
 
  <div class="spacer"></div>

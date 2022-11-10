@@ -8,9 +8,55 @@
     public $account_number='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
-      $this->active_subscriber=$_SESSION['active_subscriber'];
-      $this->user_id=$_SESSION['active_user'];
+
+        $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+        $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
+
+        $this->active_subscriber=$_SESSION['active_subscriber'];
+        $this->user_id=$_SESSION['active_user'];
+
+    }
+
+  function AccountIdGen(){
+        $sql = "SELECT COUNT(*) AS count FROM all_accounts WHERE  subscriber_id='" . $this->active_subscriber . "'";
+        $r=$this->mysqli->query($sql);
+        $count = $r->fetch_assoc();
+        $count = ++$count['count'];
+        $len = strlen($count);
+        if ($len < 10) {
+          $prefix = '00';
+        } else {
+          $prefix = '';
+        }
+        return $prefix . '' . $count;
+  }
+
+
+    function NewAccount($account_name,$account_header,$description){
+        $check="SELECT * FROM all_accounts WHERE account_name='".$account_name."' AND subscriber_id='".$this->active_subscriber."'";
+        $r=$this->mysqli->query($check);
+        if($r->num_rows ==0){
+
+          $account_number=$this->AccountIdGen();
+
+          $table = 'all_accounts';
+          $fields = array("subscriber_id", "account_number", "account_name", "account_header", "description");
+          $values = array("$this->active_subscriber", "$account_number", "$account_name", "$account_header", "$description");
+          $query = insert_data($this->db, $table, $fields, $values);
+
+          if ($query) {
+            echo 'save_successful';
+          } else {
+            echo 'failed';
+          }
+
+        }else {
+          return 'Failed. Duplicate Account Exists'; 
+        }
+        
+
+        
+
     }
 
     function AccountInfo(){

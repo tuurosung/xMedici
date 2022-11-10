@@ -45,6 +45,27 @@
       )";
 
       $this->mysqli->query($sql);
+      
+      $sql="CREATE TABLE IF NOT EXISTS billing_points (
+        sn int NOT NULL AUTO_INCREMENT,
+        billing_point varchar(45) COLLATE utf8_unicode_ci NOT NULL,
+        point_name text COLLATE utf8_unicode_ci NOT NULL,
+        PRIMARY KEY (sn)
+      )";
+
+      $this->mysqli->query($sql);
+
+      $sql="INSERT IGNORE INTO billing_points (sn, billing_point, point_name) VALUES
+      (1, 'registration', 'Patient Registration'),
+      (2, 'appointment', 'Appointment'),
+      (3, 'admission', 'Admission'),
+      (4, 'services', 'Other Services'),
+      (5, 'anaesthesia', 'Anaesthesia'),
+      (6, 'surgery', 'Surgery'),
+      (7, 'radiology', 'Radiology')";
+
+      $this->mysqli->query($sql);
+
 
 
       $this->active_subscriber=$_SESSION['active_subscriber'];
@@ -106,7 +127,7 @@
 
         return 'save_successful';
       }
-    }// end Create
+    }// end Create 
 
 
 
@@ -126,7 +147,14 @@
       return $data;
     }
 
-
+    function AllServices(){
+      $sql="SELECT * FROM services WHERE subscriber_id='".$this->active_subscriber."'";
+      $result=$this->mysqli->query($sql);
+      while ($rows=$result->fetch_assoc()) {
+        $data[]=$rows;
+      }
+      return $data;
+    }
 
 
   }

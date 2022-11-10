@@ -1,14 +1,16 @@
 <?php
 
   /**
-   * Doctor
+   * Class for handling pharmacy
    */
   class Pharmacy{
 
     Public $pharm_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+    $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+    $this->mysqli = mysqli_connect('localhost', 'root', '@Tsung3#', 'xMedici');
+
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
 
@@ -20,6 +22,17 @@
         $count=mysqli_fetch_assoc($query);
         $count=++$count['count'];
         return 'PHWKIN'.prefix($count).''.$count;
+    }
+
+    function AllPrescriptions(){
+      $sql="SELECT * FROM prescriptions WHERE subscriber_id='".$this->active_subscriber."'";
+      $r=$this->mysqli->query($sql);
+      if($r->num_rows >0){
+        while ($rows=$r->fetch_assoc()) {
+          $data[]=$rows;
+        }
+        return $data;
+      }
     }
 
     function AddToWalkInCart($drug_id,$retail_price,$qty,$total){

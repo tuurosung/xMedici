@@ -1,14 +1,20 @@
 <?php
 
   /**
-   * Expenditure
+   * Class that handles Laboratory Tests
    */
   class Test{
 
     Public $test_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+      // $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+      
+      include ('../Includes/dbconn.php');
+
+      $this->db= $db;
+      $this->mysqli=$mysqli;
+
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
       $this->today=date('Y-m-d');
@@ -135,7 +141,7 @@
         $table='lab_tests_parameters';
         $fields=array("subscriber_id","test_id","parameter_id","description","unit","general_min","general_max","male_min","male_max","female_min","female_max","child_min","child_max","status");
         $values=array("$this->active_subscriber","$test_id","$parameter_id","$description","$unit","$general_min","$general_max","$male_min","$male_max","$female_min","$female_max","$child_min","$child_max","active");
-        $query=insert_data($db,$table,$fields,$values);
+        $query=insert_data($this->db,$table,$fields,$values);
         return $query;
       }
     }

@@ -8,7 +8,10 @@
     Public $drug_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+
+      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
+      $this->mysqli = new mysqli('localhost', 'root', '@Tsung3#', 'xMedici');
+
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
       $this->today=date('Y-m-d');
@@ -141,7 +144,7 @@
 
     function CreateDrug($unit,$generic_name,$trade_name,$category,$manufacturer,$shelf,$restock_level,$cost_price,$retail_price,$date){
       $drug_id=$this->DrugIdGen();
-      $check_exists=mysqli_query($this->db,"SELECT * FROM pharm_inventory WHERE (drug_id='".$drug_id."' OR trade_name='".$trade_name."') AND  subscriber_id='".$this->active_subscriber."'") or die(msyqli_error($this->db));
+      $check_exists=mysqli_query($this->db,"SELECT * FROM pharm_inventory WHERE (drug_id='".$drug_id."' OR trade_name='".$trade_name."') AND  subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       if(mysqli_num_rows($check_exists) > 0){
 
         return "Similar Drug Exists";
@@ -168,7 +171,7 @@
                                           unit='".$unit."',
                                           generic_name='".$generic_name."',
                                           trade_name='".$trade_name."',
-                                          category='".$drug_category."',
+                                          category='".$category."',
                                           manufacturer='".$manufacturer."',
                                           restock_level='".$restock_level."',
                                           cost_price='".$cost_price."',
@@ -188,12 +191,9 @@
 
     function DeleteDrug(){
       if(isset($this->drug_id)){
-        $delete_query=mysqli_query($this->db,"UPDATE pharm_inventory
-                                                                        SET status='deleted'
-                                                                        WHERE drug_id='".$this->drug_id."' AND subscriber_id='".$this->active_subscriber."'
-                                                  ") or die(mysqli_error($this->db));
+        $delete_query=mysqli_query($this->db,"UPDATE pharm_inventory SET status='deleted' WHERE drug_id='".$this->drug_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
         if(mysqli_affected_rows($this->db)==1){
-          mysqli_query($this->db,"UPDATE stock SET status='deleted' WHERE drug_id='".$this->drug_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($db));
+          mysqli_query($this->db,"UPDATE stock SET status='deleted' WHERE drug_id='".$this->drug_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
           return 'delete_successful';
         }else {
           return 'Unable to delete drug';

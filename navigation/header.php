@@ -10,21 +10,14 @@ require_once '../serverscripts/Classes/Patient.php';
 require_once '../serverscripts/Classes/OPD.php';
 require_once '../serverscripts/Classes/Admissions.php';
 require_once '../serverscripts/Classes/Services.php';
-// require_once '../serverscripts/Classes/Admins.php';
-// require_once '../serverscripts/Classes/AdminsHr.php';
-// require_once '../serverscripts/Classes/Doctors.php';
-// require_once '../serverscripts/Classes/Nurses.php';
-// require_once '../serverscripts/Classes/Pharmacists.php';
-// require_once '../serverscripts/Classes/Labtists.php';
-// require_once '../serverscripts/Classes/Accountants.php';
 // require_once '../serverscripts/Classes/Tests.php';
 require_once '../serverscripts/Classes/Payments.php';
 // require_once '../serverscripts/Classes/Surgeries.php';
 // require_once '../serverscripts/Classes/Wards.php';
 
 // require_once '../serverscripts/Classes/Invoices.php';
-// require_once '../serverscripts/Classes/Drugs.php';
-// require_once '../serverscripts/Classes/Pharmacy.php';
+require_once '../serverscripts/Classes/Drugs.php';
+require_once '../serverscripts/Classes/Pharmacy.php';
 // require_once '../serverscripts/Classes/Reports.php';
 require_once '../serverscripts/Classes/Expenditure.php';
 // require_once '../serverscripts/Classes/Banking.php';
@@ -44,6 +37,7 @@ $staff=new Staff();
 $staff->staff_id=$staff_id;
 $staff->StaffInfo();
 
+$active_staff_fullname=$staff->full_name;
 $user_prefix=substr($user_id,0,2);
 
 

@@ -159,7 +159,7 @@
 
 
 <div id="new_patient_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" style="">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
 			<form id="new_patient_frm">
       <div class="modal-body">

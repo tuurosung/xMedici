@@ -6,7 +6,7 @@
         <h6 class="font-weight-bold"><i class="fas fa-envelope-open mr-3" aria-hidden></i> Secure you account.</h6>
         <hr>
 
-        <p class="mt-4">Hi <?php echo $user_fullname; ?>,</p>
+        <p class="mt-4">Hi <?php echo $active_staff_fullname; ?>,</p>
 
         <p>Update your email so you don't get locked out of your account.</p>
 
@@ -28,7 +28,7 @@
 
 
 <?php
-  ob_end_flush();
+  // ob_end_flush();
  ?>
 <script src="../mdb/js/jquery-3.3.1.min.js"></script>
 <script src="../mdb/js/popper.min.js"></script>
