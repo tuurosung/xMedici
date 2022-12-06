@@ -1,5 +1,5 @@
 <?php
-
+  require_once ('Database.php');
   /**
    * Wards
    */
@@ -8,8 +8,11 @@
     Public $ward_id='';
 
     function __construct(){
-      $this->db = mysqli_connect('localhost', 'root', '@Tsung3#', 'xMedici') or die("Check Connection");
-      $this->mysqli = mysqli_connect('localhost', 'root', '@Tsung3#', 'xMedici');
+      
+      $q=new DataBase();
+
+      $this->db = $q->db;
+      $this->mysqli = $q->mysqli;
 
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->user_id=$_SESSION['active_user'];
@@ -71,8 +74,9 @@
 
     function CreateWard($ward_type,$description){
 
-      $checkstring=mysqli_query($this->db,"SELECT * FROM wards WHERE description='".$description."' AND subscriber_id='".$this->active_subscriber."' AND status='active'")or die(mysqli_error($this->db));
-      if(mysqli_num_rows($check_username) > 0){
+      $check="SELECT * FROM wards WHERE description='".$description."' AND subscriber_id='".$this->active_subscriber."' AND status='active'";
+      $r=$this->mysqli->query($check);
+      if($r->num_rows > 0){
         return 'Ward Exists';
       }else {
 
@@ -90,8 +94,9 @@
 
     function CreateBed($ward_id,$bed_type,$description){
       $bed_id=$this->BedIdGen();
-      $checkstring=mysqli_query($this->db,"SELECT * FROM beds WHERE (bed_id='".$bed_id."' OR description='".$description."') AND ward_id='".$ward_id."' AND  subscriber_id='".$this->active_subscriber."' AND status='active'")or die(mysqli_error($this->db));
-      if(mysqli_num_rows($check_username) > 0){
+      $check="SELECT * FROM beds WHERE (bed_id='".$bed_id."' OR description='".$description."') AND ward_id='".$ward_id."' AND  subscriber_id='".$this->active_subscriber."' AND status='active'";
+      $r=$this->mysqli->query($check);
+      if($r->num_rows > 0){
         return 'Bed Exists';
       }else {
 

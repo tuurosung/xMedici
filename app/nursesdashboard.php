@@ -7,42 +7,22 @@
 
 
     $patient=new Patient();
-    $doctor=new Doctor();
-    $nurse=new Nurse();
-    $pharm=new Pharmacist();
     $opd=new Visit();
     $pmt=new Payment();
-
     $service=new Service();
 
  ?>
+
  <?php
+
  	$p=new Patient();
  	$ward=new Ward();
- 	$doctor=new Doctor();
  	$visit=new Visit();
   $admission=new Admission();
  	// $s=new Service();
 
-
   $active_user=$_SESSION['active_user'];
   ?>
-
-
-<style media="screen">
-table.table thead th {
-border-top: none;
-border-bottom: solid 1px #4285f4 !important;
-}
-body{
-  background-color: #eff2f7 !important;
-}
-</style>
-
-
-
-<main class="py-5 ml-lg-5 main" style="">
-  <div class="container-fluid mt-2">
 
 
     <?php

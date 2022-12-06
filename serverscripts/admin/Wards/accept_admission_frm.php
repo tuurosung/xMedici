@@ -28,8 +28,6 @@
         $service->ServiceInfo();
         $unit_cost=$service->service_cost;
 
-
-
         $table='admission_billing';
         $fields=array("subscriber_id","patient_id","visit_id","admission_id","service_id","unit_cost","days","status");
         $values=array("$active_subscriber","$patient_id","$visit_id","$admission_id","$srv","$unit_cost","1","active");

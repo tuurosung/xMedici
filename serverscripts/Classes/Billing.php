@@ -14,23 +14,6 @@
       $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
       $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
 
-      $sql="CREATE TABLE IF NOT EXISTS billing (
-      sn int NOT NULL AUTO_INCREMENT,
-      subscriber_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-      patient_type varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-      patient_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-      visit_id varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-      bill_id varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-      reference varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-      narration text COLLATE utf8_unicode_ci NOT NULL,
-      bill_amount double(10,2) NOT NULL,
-      date date NOT NULL,
-      payment_status varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-      status varchar(45) COLLATE utf8_unicode_ci NOT NULL,
-      PRIMARY KEY (sn)
-    ) ";
-
-    $this->mysqli->query($sql);
 
       if(!isset($_SESSION['active_subscriber']) || !isset($_SESSION['active_user']) || $_SESSION['active_subscriber']=='' || $_SESSION['active_user']==''){
         die('session_expired');
@@ -126,7 +109,7 @@
                                                                           WHERE
                                                                             patient_id='".$patient_id."' AND visit_id='".$visit_id."' AND bill_id='".$bill_id."' AND subscriber_id='".$this->active_subscriber."'
 
-                                                    ") or die(msyqli_error($this->db));
+                                                    ") or die(mysqli_error($this->db));
         if($update_billing){
           return 'update_successful';
         }else {
@@ -140,7 +123,7 @@
                                                                   SET status='deleted'
                                                                   WHERE
                                                                       bill_id='".$bill_id."' AND subscriber_id='".$this->active_subscriber."'
-                                          ") or die(mysqli_error($db));
+                                          ") or die(mysqli_error($this->db));
         if(mysqli_affected_rows($this->db)==1){
           return 'delete_successful';
         }else {
@@ -162,6 +145,15 @@
 
 
     }
+
+  function BillingPoints(){
+    $sql = "SELECT * FROM billing_points";
+    $result = $this->mysqli->query($sql);
+    while ($rows = $result->fetch_assoc()) {
+      $data[] = $rows;
+    }
+    return $data;
+  }
 
 
   }

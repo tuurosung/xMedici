@@ -33,7 +33,7 @@
 	$visit->VisitPayment($patient_id,$visit_id);
 	$visit->VisitBalance($patient_id,$visit_id);
 
-	$doc=new Doctor();
+
 
 	$get_vitals=mysqli_query($db,"SELECT * FROM vitals WHERE visit_id='".$visit_id."' AND subscriber_id='".$active_subscriber."' AND status='active'") or die(mysqli_error($db));
 	$vitals=mysqli_fetch_array($get_vitals);
@@ -42,7 +42,6 @@
 	$surg=new Surgery();
 	$opd=new Visit();
 	$ward=new Ward();
-	$nurse=new Nurse();
  ?>
 
 
@@ -50,8 +49,7 @@
 		<i class="fas fa-heartbeat my-float"></i>
 		</a>
 
-		<main class="py-1 mx-lg-5 main" style="min-height:100vh;">
-			<div class="container-fluid py-4">
+	
 
 				<div class="row mb-4">
 				  <div class="col-6">
@@ -236,14 +234,7 @@
 												<div class="row">
 													<div class="col-md-4">
 
-														<?php
-															// if($visit->admission_status=='admitted'){
-															// 	?>
-															<!-- // 	<p class="text-center mb-3 montserrat font-weight-bold">ADMITTED</p>
-															// 	<hr> -->
-															<?php
-															// }
-														 ?>
+													
 
 														<div class="text-center mb-3">
 															<?php
@@ -864,26 +855,7 @@
 
 													while ($rows=mysqli_fetch_array($get_reviews)) {
 														$pref=substr($rows['doctor_id'],0,2);
-														switch ($pref) {
-														  case 'NR':
-														    $nurse=new Nurse();
-														    $nurse->nurse_id=$rows['doctor_id'];
-														    $nurse->NurseInfo();
-														    $reviewer=$nurse->nurse_fullname;
-														    break;
-
-														  case 'DR':
-														    // $nurse=new Nurse();
-														    $doctor=new Doctor();
-														    $doctor->doctor_id=$rows['doctor_id'];
-														    $doctor->DoctorInfo();
-														    $reviewer=$doctor->doctor_fullname;
-														    break;
-
-														  default:
-														    // code...
-														    break;
-														}
+													
 														// $doctor->doctor_id=$rows['doctor_id'];
 														?>
 														<div class="card mb-5">
@@ -928,26 +900,7 @@
 
 													while ($rows=mysqli_fetch_array($get_notes)) {
 														$pref=substr($rows['doctor_id'],0,2);
-														switch ($pref) {
-															case 'NR':
-																$nurse=new Nurse();
-																$nurse->nurse_id=$rows['doctor_id'];
-																$nurse->NurseInfo();
-																$reviewer=$nurse->nurse_fullname;
-																break;
-
-															case 'DR':
-																// $nurse=new Nurse();
-																$doctor=new Doctor();
-																$doctor->doctor_id=$rows['doctor_id'];
-																$doctor->DoctorInfo();
-																$reviewer=$doctor->doctor_fullname;
-																break;
-
-															default:
-																// code...
-																break;
-														}
+														
 														// $doctor->doctor_id=$rows['doctor_id'];
 														?>
 														<div class="card mb-5">

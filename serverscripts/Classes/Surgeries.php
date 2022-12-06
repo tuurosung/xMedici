@@ -1,5 +1,5 @@
 <?php
-
+  require_once('Database.php');
   /**
    * Surgery
    */
@@ -8,7 +8,11 @@
     Public $surgery_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','shaabd_xmedici','@Tsung3#','shaabd_xmedici') or die("Check Connection");
+      $q=new DataBase();
+
+      $this->db=$q->db;
+      $this->mysqli=$q->mysqli;
+
       $this->active_subscriber=$_SESSION['active_subscriber'];
       $this->active_user=$_SESSION['active_user'];
       $now=time();

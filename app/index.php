@@ -35,7 +35,7 @@ if ($_SESSION['access_level'] == 'administrator') {
 }
 
 
-// $account=new Account();
+$account=new Account();
 $patient = new Patient();
 // $p=new Patient();
 $admission = new Admission();
@@ -56,10 +56,6 @@ $this_month = date('m');
 
 
 
-
-
-<main class="pb-3 ml-lg-5 main">
-  <div class="container-fluid mt-0 pt-5">
 
     <div class="row mb-4">
       <div class="col-md-7">
@@ -302,22 +298,22 @@ $this_month = date('m');
             <?php
             $i = 1;
             $shifts = $staff->ShiftManifest();
-            foreach ($shifts as $rows) {
-              $staff_id = $rows['staff_id'];
-              $staff->staff_id = $staff_id;
-              $staff->StaffInfo();
+            if(is_array($shifts)){
+              foreach ($shifts as $rows) {
+                $staff_id = $rows['staff_id'];
+                $staff->staff_id = $staff_id;
+                $staff->StaffInfo();
 
 
-            ?>
-              <li class="list-group-item b-0 pl-0" style="border:none !important">
-                <div class="">
-                  <p class="m-0"><?php echo $i++; ?>. <?php echo $staff->full_name; ?> <span class="float-right"><?php echo date('H:i:s', strtotime($rows['time_in'])); ?></span> </p>
-                </div>
-              </li>
-            <?php
+              ?>
+                <li class="list-group-item b-0 pl-0" style="border:none !important">
+                  <div class="">
+                    <p class="m-0"><?php echo $i++; ?>. <?php echo $staff->full_name; ?> <span class="float-right"><?php echo date('H:i:s', strtotime($rows['time_in'])); ?></span> </p>
+                  </div>
+                </li>
+              <?php
+              }
             }
-
-
             ?>
 
 

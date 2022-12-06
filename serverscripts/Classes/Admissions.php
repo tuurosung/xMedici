@@ -8,6 +8,7 @@
     Public $visit_id='';
 
     function __construct(){
+
       $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
       $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
 
@@ -69,6 +70,151 @@
     }
 
 
+  // -------------------------------------------------------Admission-------------------------------------------------
+
+        function AdmissionIdGen(){
+          $query = mysqli_query($this->db, "SELECT COUNT(*) as count FROM admissions WHERE subscriber_id='" . $this->active_subscriber . "'") or die(mysqli_error($this->db));
+          $count = mysqli_fetch_assoc($query);
+          $count = ++$count['count'];
+          return 'ADM' . prefix($count) . '' . $count;
+        }
+
+        function All(){
+          $sql = "SELECT * FROM admissions WHERE subscriber_id='" . $this->active_subscriber . "' AND admission_status='admitted'";
+          $r = $this->mysqli->query($sql);
+          if ($r->num_rows > 0) {
+            while ($rows = $r->fetch_assoc()) {
+              $data[] = $rows;
+            }
+            return $data;
+          } else {
+            return 'No data available';
+          }
+        }
+
+
+        function RequestAdmission($patient_id, $visit_id, $ward_id, $admission_notes, $doctor_id) {
+          $admission_id = $this->AdmissionIdGen();
+          $request_timestamp = time();
+          $checkstring = mysqli_query($this->db, "SELECT * FROM admissions WHERE patient_id='" . $patient_id . "' AND visit_id='" . $visit_id . "' AND subscriber_id='" . $this->active_subscriber . "'") or die(mysqli_error($this->db));
+          if (mysqli_num_rows($checkstring) > 0) {
+
+            return 'Patient Already Admitted';
+          } else {
+
+            $table = 'admissions';
+            $fields = array("subscriber_id", "patient_id", "visit_id", "admission_id", "ward_id", "admission_notes", "admission_date", "admission_requested_by", "admission_request_status", "request_timestamp", "status");
+            $values = array("$this->active_subscriber", "$patient_id", "$visit_id", "$admission_id", "$ward_id", "$admission_notes", "$this->today", "$doctor_id", "PENDING", "$request_timestamp", "active");
+            $query = insert_data($this->db, $table, $fields, $values);
+
+            return 'save_successful';
+          }
+        }
+
+
+        function AdmissionInfo(){
+          $query = mysqli_query($this->db, "SELECT * FROM admissions WHERE admission_id='" . $this->admission_id . "' AND subscriber_id='" . $this->active_subscriber . "'") or die(mysqli_error($this->db));
+          $admission_info = mysqli_fetch_array($query);
+          $this->patient_id = $admission_info['patient_id'];
+          $this->visit_id = $admission_info['visit_id'];
+          $this->admission_date = $admission_info['admission_date'];
+          $this->admission_requested_by = $admission_info['admission_requested_by'];
+          $this->admission_status = $admission_info['admission_status'];
+
+          $admission_date = new DateTime($admission_info['admission_date']);
+
+          if ($this->admission_status == 'admitted') {
+            $todays_date = new DateTime(date('Y-m-d'));
+            $diff = date_diff($admission_date, $todays_date);
+          } else {
+            $discharge_date = new DateTime($admission_info['discharge_date']);
+            $diff = date_diff($admission_date, $discharge_date);
+          }
+
+          $days_on_admission = $diff->format('%d') + 1;
+          $this->days_on_admission = $days_on_admission;
+        }
+
+        function PendingAdmissionRequests() {
+          $sql = "SELECT * FROM admissions WHERE subscriber_id='" . $this->active_subscriber . "' AND admission_request_status='PENDING'";
+          $r = $this->mysqli->query($sql);
+          if ($r->num_rows > 0) {
+            while ($rows = $r->fetch_assoc()) {
+              $data[] = $rows;
+            }
+            return $data;
+          } else {
+            return 'No data available';
+          }
+        }
+
+
+        function AcceptAdmission($admission_id, $bed_id, $admission_notes, $nurse_id){
+          $accept_timestamp = time();
+          $accept_admission = mysqli_query($this->db, "UPDATE admissions
+                                                                                  SET
+                                                                                    bed_id='" . $bed_id . "',
+                                                                                    admission_accepted_by='" . $nurse_id . "',
+                                                                                    accept_timestamp='" . $accept_timestamp . "',
+                                                                                    admission_request_status='ACCEPTED'
+                                                                                  WHERE
+                                                                                    admission_id='" . $admission_id . "' AND subscriber_id='" . $this->active_subscriber . "'
+                                                                ")  or die(mysqli_error($this->db));
+          if (mysqli_affected_rows($this->db) == 1) {
+            $update_bed_status = mysqli_query($this->db, "UPDATE beds SET bed_status='FULL' WHERE bed_id='" . $bed_id . "' AND subscriber_id='" . $this->active_subscriber . "'") or die(mysqli_error($this->db));
+            if ($update_bed_status) {
+              return 'save_successful';
+            }
+          } else {
+            return 'admission_failed';
+          }
+        }
+
+
+
+
+
+  // ------------------------------------------------------Discharge---------------------------------------------------
+
+
+  function RequestDischarge($admission_id, $patient_id, $visit_id, $discharge_notes, $time){
+    $check_discharges = mysqli_query($this->db, "SELECT *  FROM admission_discharges WHERE
+                                                                                admission_id='" . $admission_id . "' AND subscriber_id='" . $this->active_subscriber . "' AND status='active' ") or die(mysqli_error($this->db));
+    if (mysqli_num_rows($check_discharges) > 0) {
+      return 'Discharge already requested';
+    } else {
+
+      $table = 'admission_discharges';
+      $fields = array("subscriber_id", "patient_id", "visit_id", "admission_id", "discharge_date", "discharge_notes", "discharging_doctor", "discharge_status", "request_time", "status");
+      $values = array("$this->active_subscriber", "$patient_id", "$visit_id", "$admission_id", "$this->today", "$discharge_notes", "$this->active_user", "PENDING", "$time", "active");
+      $query = insert_data($this->db, $table, $fields, $values);
+
+      return $query;
+    } //end if
+  }
+
+
+  function PendingDischargeRequests(){
+    $sql = "SELECT * FROM admission_discharges WHERE discharge_status='PENDING' AND  status='active' AND subscriber_id='" . $this->active_subscriber . "'";
+    $r = $this->mysqli->query($sql);
+    if ($r->num_rows > 0) {
+      while ($rows = $r->fetch_assoc()) {
+        $data[] = $rows;
+      }
+      return $data;
+    } else {
+      return 'No data available';
+    }
+  }
+
+
+
+    // -----------------------------------------------------Notes---------------------------------------------------------
+    
+    
+    
+    
+    
     function LabRequestIdGen(){
       $query=mysqli_query($this->db,"SELECT COUNT(*) as count FROM lab_requests WHERE subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
       $count=mysqli_fetch_assoc($query);
@@ -76,35 +222,13 @@
       return 'LAB'.prefix($count).''.$count;
     }
 
-    function AdmissionIdGen(){
-      $query=mysqli_query($this->db,"SELECT COUNT(*) as count FROM admissions WHERE subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
-      $count=mysqli_fetch_assoc($query);
-      $count=++$count['count'];
-      return 'ADM'.prefix($count).''.$count;
-    }
+    
+ 
 
-    function AdmissionInfo(){
-      $query=mysqli_query($this->db,"SELECT * FROM admissions WHERE admission_id='".$this->admission_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
-      $admission_info=mysqli_fetch_array($query);
-      $this->patient_id=$admission_info['patient_id'];
-      $this->visit_id=$admission_info['visit_id'];
-      $this->admission_date=$admission_info['admission_date'];
-      $this->admission_requested_by=$admission_info['admission_requested_by'];
-      $this->admission_status=$admission_info['admission_status'];
+    
 
-      $admission_date=new DateTime($admission_info['admission_date']);
 
-      if($this->admission_status=='admitted'){
-        $todays_date=new DateTime(date('Y-m-d'));
-        $diff=date_diff($admission_date,$todays_date);
-      }else {
-        $discharge_date=new DateTime($admission_info['discharge_date']);
-        $diff=date_diff($admission_date,$discharge_date);
-      }
-
-      $days_on_admission=$diff->format('%d') +1;
-      $this->days_on_admission=$days_on_admission;
-    }
+    
 
 
     function VisitLog($patient_id,$visit_id,$notes){
@@ -185,6 +309,7 @@
       $query=insert_data($this->db,$table,$fields,$values);
       return $query;
     }
+
     function RecordCE($patient_id,$visit_id,$clinical_examination){
       $table='patient_examination';
       $fields=array("subscriber_id","patient_id","visit_id","observation","status");
@@ -335,64 +460,9 @@
 
     }
 
-    function RequestAdmission($patient_id,$visit_id,$ward_id,$admission_notes,$doctor_id){
-      $admission_id=$this->AdmissionIdGen();
-      $request_timestamp=time();
-      $checkstring=mysqli_query($this->db,"SELECT * FROM admissions WHERE patient_id='".$patient_id."' AND visit_id='".$visit_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
-      if(mysqli_num_rows($checkstring) >0){
-        return 'Patient Already Admitted';
-      }else {
-        $table='admissions';
-        $fields=array("subscriber_id","patient_id","visit_id","admission_id","ward_id","admission_notes","admission_date","admission_requested_by","admission_request_status","request_timestamp","status");
-        $values=array("$this->active_subscriber","$patient_id","$visit_id","$admission_id","$ward_id","$admission_notes","$this->today","$doctor_id","PENDING","$request_timestamp","active");
-        $query=insert_data($this->db,$table,$fields,$values);
+  
 
-        // mysqli_query($this->db,"UPDATE visits SET admission_status='admitted' WHERE visit_id='".$visit_id."' AND patient_id='".$patient_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
-        return 'save_successful';
-      }
-    }
-
-    function AcceptAdmission($admission_id,$bed_id,$admission_notes,$nurse_id){
-      $accept_timestamp=time();
-      $accept_admission=mysqli_query($this->db,"UPDATE admissions
-                                                                            SET
-                                                                              bed_id='".$bed_id."',
-                                                                              admission_accepted_by='".$nurse_id."',
-                                                                              accept_timestamp='".$accept_timestamp."',
-                                                                              admission_request_status='ACCEPTED'
-                                                                            WHERE
-                                                                              admission_id='".$admission_id."' AND subscriber_id='".$this->active_subscriber."'
-                                                          ")  or die(mysqli_error($this->db));
-        if(mysqli_affected_rows($this->db)==1){
-          $update_bed_status=mysqli_query($this->db,"UPDATE beds SET bed_status='FULL' WHERE bed_id='".$bed_id."' AND subscriber_id='".$this->active_subscriber."'") or die(mysqli_error($this->db));
-          if($update_bed_status){
-            return 'save_successful';
-          }
-        }else {
-          return 'admission_failed';
-        }
-    }
-
-
-
-    function RequestDischarge($admission_id,$patient_id,$visit_id,$discharge_notes,$time){
-      $check_discharges=mysqli_query($this->db,"SELECT *
-                                                                            FROM admission_discharges
-                                                                            WHERE
-                                                                                admission_id='".$admission_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'
-                                                        ") or die(mysqli_error($this->db));
-      if(mysqli_num_rows($check_discharges) > 0){
-        return 'Discharge already requested';
-      }else {
-
-        $table='admission_discharges';
-        $fields=array("subscriber_id","patient_id","visit_id","admission_id","discharge_date","discharge_notes","discharging_doctor","discharge_status","request_time","status");
-        $values=array("$this->active_subscriber","$patient_id","$visit_id","$admission_id","$this->today","$discharge_notes","$this->active_user","PENDING","$time","active");
-        $query=insert_data($this->db,$table,$fields,$values);
-
-        return $query;
-      }//end if
-    }
+    
 
 
   }

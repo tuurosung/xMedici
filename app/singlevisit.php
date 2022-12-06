@@ -92,9 +92,6 @@ $opd->VisitInfo($visit_id);
 	<i class="fas fa-heartbeat my-float"></i>
 </a>
 
-<main class="py-1 mx-lg-5 main" style="min-height:100vh;">
-	<div class="container-fluid py-4">
-
 
 
 		<?php

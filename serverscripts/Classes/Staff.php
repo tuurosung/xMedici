@@ -1,6 +1,6 @@
 <?php
 
-// require_once '../../Includes/dbconn.php';
+require_once ('Database.php');
 
   /**
    *Class for handling users
@@ -12,17 +12,22 @@
 
     function __construct(){
 
-      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
-      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
+      $d=new DataBase();
+
+      $this->db=$d->db;
+      $this->mysqli=$d->mysqli;
+
+      $this->timenow=date('H:i:s');
+      $this->today=date('Y-m-d');
 
         if(isset($_SESSION['active_subscriber'])){
           $this->active_subscriber=$_SESSION['active_subscriber'];
           $this->active_user=$_SESSION['active_user'];
-          $this->today=date('Y-m-d');
-          $this->timenow=date('Y-m-d H:i:s');
 
           // create automatic hr categories
-          $hr_categories=['admin_hr'  =>  'Human Resource',
+          $this->hr_categories=[
+            'administrator' => 'Administrator',
+            'admin_hr'  =>  'Human Resource',
             'doctor'  =>  'Doctor',
             'nurse'  =>  'Nurse',
             'laboratory'  =>  'Laboratory Scientist',
@@ -30,10 +35,27 @@
             'pharmacy'  =>  'Pharmacist'
           ];
 
-          foreach ($hr_categories as $alias => $description) {
+          foreach ($this->hr_categories as $alias => $description) {
           $sql="INSERT IGNORE INTO hr_categories(alias,description) VALUES('$alias','$description')";
           $this->mysqli->query($sql);
           }//
+
+          $this->titles=['Dr.','Mr.','Mrs','Miss'];
+
+          $this->ranks=['General Physician', 
+              'Physiotherapy', 
+              'Dermatology', 
+              'Gynecology',
+              'Oncology', 
+              'Neurology', 
+              'Physician Assistant', 
+              'Nurse Consultant', 
+              'Staff Nurse', 
+              'Senior Staff Nurse',
+              'Nursing Officer',
+              'DDNS',
+              'Administration'
+            ];
         }
 
     }//end construct
@@ -53,7 +75,6 @@
           $info=$r->fetch_assoc();
 
         	$role=$info['role'];
-        	$user_fullname=$info['full_name'];
         	$user_id=$info['staff_id'];
         	$email=$info['email'];
         	$active_subscriber=$info['subscriber_id'];
@@ -63,14 +84,12 @@
           
 
           if($role=='administrator'){
-              $_SESSION['username']=$username;
               $_SESSION['access_level']=$role;
               $_SESSION['active_user']=$user_id;
               $_SESSION['active_subscriber']=$active_subscriber;
             return 'login_successful';
           }else {
             if($permission =='granted'){
-              $_SESSION['username']=$username;
               $_SESSION['access_level']=$role;
               $_SESSION['active_user']=$user_id;
               $_SESSION['active_subscriber']=$active_subscriber;
@@ -94,6 +113,10 @@
       return $data;
     }
 
+   
+
+    
+
     function AllStaff(){
       $sql="SELECT * FROM staff WHERE subscriber_id='".$this->active_subscriber."' AND status='active'";
       $result=$this->mysqli->query($sql);
@@ -108,23 +131,36 @@
 
     function StaffInfo(){
 
-      $query=mysqli_query($this->db,"SELECT * FROM staff WHERE staff_id='".$this->staff_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'") or die(mysqli_error($this->db));
-      $info=mysqli_fetch_array($query);
+      $sql="SELECT * FROM staff WHERE staff_id='".$this->staff_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'";
+      $r=$this->mysqli->query($sql);
 
-      $this->surname=$info['surname'];
-      $this->othernames=$info['othernames'];
-      $this->address=$info['address'];
-      $this->full_name=$info['surname'] .' '.$info['othernames'];
-      $this->phone=$info['phone_number'];
-      $this->email=$info['email'];
-      $this->address=$info['address'];
-      $this->rank=$info['rank'];
-      $this->role=$info['role'];
-      $this->title=$info['title'];
+      if($r->num_rows ==1){
+        
+        $info=$r->fetch_assoc();
 
+        $this->title = $info['title'];
+        $this->surname = $info['surname'];
+        $this->othernames = $info['othernames'];
+        $this->address = $info['address'];
+        $this->emergency_contact_person = $info['emergency_contact_person'];
+        $this->emergency_contact = $info['emergency_contact'];
+        $this->address = $info['address'];
+        $this->full_name = $info['surname'] . ' ' . $info['othernames'];
+        $this->phone = $info['phone_number'];
+        $this->email = $info['email'];
+        $this->address = $info['address'];
+        $this->rank = $info['staff_rank'];
+        $this->role = $info['role'];
+        $this->title = $info['title'];
 
+      }else {
+
+        return 'Staff Not Found';
+
+      }     
 
     }//end function UserInfo
+
 
     function   Create($title, $rank, $role, $surname, $othernames, $phone_number, $address, $emergency_contact_person, $emergency_contact, $username, $password){
       $staff_id=$this->StaffIdGen();
@@ -137,8 +173,8 @@
       else {
 
           $table='staff';
-          $fields=array("subscriber_id","staff_id","title","staff_rank","role","surname","othernames", "phone_number","address","emergency_contact_person","emergency_contact","username","password","date");
-          $values=array("$this->active_subscriber","$staff_id","$title","$rank","$role","$surname","$othernames", "$phone_number","$address","$emergency_contact_person","$emergency_contact","$username","$password","$this->today");
+          $fields=array("subscriber_id","staff_id","title","staff_rank","role","surname","othernames", "phone_number","address","emergency_contact_person","emergency_contact","username","password");
+          $values=array("$this->active_subscriber","$staff_id","$title","$rank","$role","$surname","$othernames", "$phone_number","$address","$emergency_contact_person","$emergency_contact","$username","$password");
           $query=insert_data($this->db,$table,$fields,$values);
 
           if($query){
@@ -149,6 +185,7 @@
           }
       }//end else
     }//end function CreateNewUser
+
 
     function DeleteStaff(){
       $sql="UPDATE staff SET status='deleted'";
@@ -163,22 +200,26 @@
 
 
 
-    function UpdateUser($staff_id,$full_name,$phone_number,$access_level,$username,$password){
-      $query=mysqli_query($this->db,"UPDATE staff
-                                                          SET
-                                                            full_name='".$full_name."',
-                                                            phone_number='".$phone_number."',
-                                                            access_level='".$access_level."',
-                                                            username='".$username."',
-                                                            password='".$password."'
-                                                          WHERE
-                                                            staff_id='".$staff_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'
-      ") or die(mysqli_error($this->db));
-
-      if(mysqli_affected_rows($this->db)==1){
+    function EditStaff($staff_id,$title, $rank, $role, $surname, $othernames, $phone_number, $address, $emergency_contact_person, $emergency_contact){
+      $sql="UPDATE staff
+                SET
+                  title='".$title."',
+                  staff_rank='".$rank."',
+                  role='".$role."',
+                  surname='".$surname."',
+                  othernames='".$othernames."',
+                  phone_number='".$phone_number."',
+                  address='".$address."',
+                  emergency_contact_person='".$emergency_contact_person."',
+                  emergency_contact='".$emergency_contact."'
+                WHERE
+                  staff_id='".$staff_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'
+        ";
+      $r=$this->mysqli->query($sql);
+      if($this->mysqli->affected_rows ==1){
         return 'update_successful';
       }else {
-        return 'Unable to update user information';
+        return 'Unable to update staff information';
       }
     }//end function
 
@@ -232,12 +273,9 @@
 
     function LogShift($staff_id,$shift_type,$notes){
 
-      $check=mysqli_query($this->db,"SELECT *
-                                                          FROM staff_attendance
-                                                          WHERE
-                                                            staff_id='".$staff_id."' AND
-                                                            subscriber_id='".$this->active_subscriber."' AND status='active'") or die(mysqli_error($this->db));
-      if(mysqli_num_rows($check) > 0){
+      $check="SELECT * FROM staff_attendance WHERE  staff_id='".$staff_id."' AND subscriber_id='".$this->active_subscriber."' AND status='active'";
+      $r=$this->mysqli->query($check);
+      if($r->num_rows > 0){
         return "Staff Already Has An Active Shift";
       }else {
         $table='staff_attendance';
@@ -273,6 +311,8 @@
           $data[]=$rows;
         }
         return $data;
+      }else {
+        return 'No data found';
       }
     }
 

@@ -10,7 +10,7 @@ echo $_SESSION['access_level'];
 //   header('Location: ../login.php');
 // }
 // else {
-header('Location: ../admin/index.php');
+header('Location: ../app/index.php');
 // }
 
 
