@@ -1,7 +1,7 @@
 <?php
-    require_once '../../dbcon.php';
-    require_once '../../Classes/Patients.php';
-    require_once '../../Classes/Billing.php';
+    require_once('../../../serverscripts/dbcon.php');
+    require_once('../../../serverscripts/Classes/Patient.php');
+    require_once('../../../serverscripts/Classes/Billing.php');
 
     $patient_id=clean_string($_GET['patient_id']);
     $visit_id=clean_string($_GET['visit_id']);

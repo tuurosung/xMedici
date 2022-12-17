@@ -1,78 +1,65 @@
 <ul class="list-group">
 <?php
-  session_start();
-  require_once '../../dbcon.php';
-  require_once '../../Classes/Patient.php';
+      session_start();
+      require_once '../../dbcon.php';
+      require_once '../../Classes/Patient.php';
+      
+      $term=clean_string($_GET['search_term']);
 
-  $p=new Patient();
-
-  $search_term=clean_string($_GET['search_term']);
-
-  $query=mysqli_query($db," SELECT *
-                                              FROM patients
-                                              WHERE
-                                                (patient_id LIKE '%".$search_term."%' OR surname LIKE '%".$search_term."%' OR othernames LIKE '%".$search_term."%' OR phone_number LIKE '%".$search_term."%' )
-                                                AND
-                                                subscriber_id='".$active_subscriber."'
-                                                AND
-                                                status!='deleted'
-                                  ") or die(mysqli_error($db));
-      ?>
-
-      <?php
-      // $get_patients=mysqli_query($db,"SELECT * FROM patients WHERE status='active' && subscriber_id='".$active_subscriber."' ORDER BY surname asc")  or die('failed');
+      $patient=new Patient();
+      $list=$patient->Find($term);      
       $i=1;
-      if(mysqli_num_rows($query)==0){
-        ?>
-        <h3 class="p-5 m-5 text-center poppins">No Patients Found</h3>
-        <?php
-      }
-      else {
-      while ($rows=mysqli_fetch_array($query)) {
-        $p->patient_id=$rows['patient_id'];
-        $p->PatientInfo();
-        $othernames=$rows['othernames'];
-        ?>
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="row" style="font-size:12px">
-              <div class="col-md-1">
-                <p class="m-0 " style="font-weight:500">
-                  <a  href="patient_folder.php?patient_id=<?php echo $p->patient_id; ?>" class="font-weight-bold">
-                    <?php echo $p->patient_id; ?>
-                  </a>
-                  </p>
 
-              </div>
-              <div class="col-md-4">
-                <p><?php echo $p->patient_fullname; ?></p>
-              </div>
-              <div class="col-md-2">
-                <p><?php echo $p->age; ?></p>
-              </div>
-              <div class="col-md-2">
-                <p><?php echo ucfirst($p->sex); ?></p>
-              </div>
-              <div class="col-md-2">
-                <p><?php echo $p->last_visit; ?></p>
-              </div>
-              <div class="col-md-1 text-right">
-                <a href="patient_folder.php?patient_id=<?php echo $p->patient_id; ?>">
-                  <i class="fas fa-chevron-right text-primary fa-2x" aria-hidden></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <?php
-      }
       ?>
-    </div>
-    <?php
-  }
-  ?>
-</div>
+
+      <table class="table table-condensed">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Folder #</th>
+						<th>Patient Name</th>
+						<th>Age</th>
+						<th>Sex</th>
+						<th>Phone Number</th>
+						<th>Last Visit</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					$patients = $patient->Find($term);
+
+					$i = 1;
+					foreach ($patients as $rows) {
+						$patient->patient_id = $rows['patient_id'];
+						$patient->PatientInfo();
+						$othernames = $rows['othernames'];
+					?>
+						<tr>
+							<td><?php echo $i++; ?></td>
+							<td>
+								<a href="patient_folder.php?patient_id=<?php echo $patient->patient_id; ?>" class="font-weight-bold">
+									<?php echo $patient->patient_id; ?></a>
+							</td>
+							<td><?php echo $patient->patient_fullname; ?></td>
+							<td><?php echo $patient->age; ?></td>
+							<td><?php echo ucfirst($patient->sex); ?></td>
+							<td><?php echo $patient->phone_number; ?></td>
+							<td><?php echo $patient->last_visit; ?></td>
+							<td class="text-right">
+								<a class="" href="patient_folder.php?patient_id=<?php echo $patient->patient_id; ?>">
+									Open Folder
+									<i class="fas fa-arrow-right ml-2" aria-hidden></i>
+								</a>
+							</td>
+						</tr>
 
 
+					<?php
+					}
+					?>
+		</div>
 
- </ul>
+		</tbody>
+		</table>
+     

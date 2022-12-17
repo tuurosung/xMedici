@@ -47,9 +47,6 @@ if ($status == 'deleted') {
 
 
 
-<main class="py-1 mx-lg-5 main">
-	<div class="container-fluid py-4">
-
 		<?php
 		if ($status == 'deceased') {
 		?>

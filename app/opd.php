@@ -13,9 +13,6 @@
 	}
 </style>
 
-		<main class="py-3 mx-lg-5 main">
-			<div class="container-fluid mt-2">
-
 
 
 				<div class="row">
@@ -63,7 +60,7 @@
 				<section>
 					<div class="card">
 						<div class="card-body">
-							<h5>Active OPD Visits</h5>
+							<h5 class="mb-5">Active OPD Visits</h5>
 
 							<table class="table table-condensed datatables">
 								<thead>
@@ -109,7 +106,7 @@
 											<td><?php echo $rows['patient_id']; ?></td>
 											<td>
 												<u>
-													<a href="singlevisit.php?visit_id=<?php echo $rows['visit_id']; ?>">
+													<a href="activate_visit.php?visit_id=<?php echo $rows['visit_id']; ?>&patient_id=<?php echo $rows['patient_id']; ?>">
 														<?php echo $rows['visit_id']; ?>
 													</a>
 												</u>

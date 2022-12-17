@@ -86,10 +86,14 @@
     function servicesFilter($billing_point){
       $sql="SELECT * FROM services WHERE billing_point ='".$billing_point."'";
       $result=$this->mysqli->query($sql);
-      while ($rows=$result->fetch_assoc()) {
-        $data[]=$rows;
+      if($result->num_rows>0){
+        while ($rows = $result->fetch_assoc()) {
+          $data[] = $rows;
+        }
+        return $data;
+      }else {
+        return 'No Data';
       }
-      return $data;
     }
 
     function AllServices(){

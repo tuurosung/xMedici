@@ -10,7 +10,7 @@
         <div class="" style="font-size:10px; font-weight:bold; letter-spacing:1px;">
           THE PAPERLESS CLINIC<br>
           <hr class="hr">
-          <?php echo $company_info['company_name']; ?>
+          <?php //echo $company_info['company_name']; ?>
         </div>
 
       </a>

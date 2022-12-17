@@ -5,8 +5,6 @@
 	// $s=new Service();
  ?>
 
-		<main class="py-3 mx-lg-5 main">
-			<div class="container-fluid mt-2">
 
 				<div class="row mb-5">
 				  <div class="col-4">
@@ -77,7 +75,7 @@
 					  </thead>
 					  <tbody>
 							<?php
-							$patients=$p->All();
+							$patients=$p->All(20);
 
 							$i=1;
 							foreach ($patients as $rows) {

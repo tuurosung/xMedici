@@ -1,43 +1,18 @@
 <?php
-
+  require_once ('Database.php');
   /**
-   * Expenditure
+   * Class for handling Patients written by @tuurosung
    */
   class Patient{
 
     Public $patient_id='';
 
     function __construct(){
-      $this->db=mysqli_connect('localhost','root','@Tsung3#','xMedici') or die("Check Connection");
-      $this->mysqli=new mysqli('localhost','root','@Tsung3#','xMedici');
 
-      $sql="CREATE TABLE IF NOT EXISTS patients (
-        sn int NOT NULL AUTO_INCREMENT,
-        subscriber_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        date date NOT NULL,
-        patient_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        surname text COLLATE utf8_unicode_ci NOT NULL,
-        othernames text COLLATE utf8_unicode_ci NOT NULL,
-        date_of_birth date NOT NULL,
-        sex text COLLATE utf8_unicode_ci NOT NULL,
-        phone_number text COLLATE utf8_unicode_ci NOT NULL,
-        hse_address text COLLATE utf8_unicode_ci NOT NULL,
-        town text COLLATE utf8_unicode_ci NOT NULL,
-        region text COLLATE utf8_unicode_ci NOT NULL,
-        hometown text COLLATE utf8_unicode_ci NOT NULL,
-        occupation text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-        religion text COLLATE utf8_unicode_ci NOT NULL,
-        marital_status varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        nearest_relative text COLLATE utf8_unicode_ci NOT NULL,
-        relative_phone text COLLATE utf8_unicode_ci NOT NULL,
-        payment_mode text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-        nhis_number text COLLATE utf8_unicode_ci NOT NULL,
-        status text COLLATE utf8_unicode_ci NOT NULL,
-        user_id varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-        PRIMARY KEY (sn)
-      )";
-
-      $this->mysqli->query($sql);
+      $q=new DataBase();
+      
+      $this->db=$q->db;
+      $this->mysqli=$q->mysqli; 
 
       if(!isset($_SESSION['active_subscriber']) || !isset($_SESSION['active_user']) || $_SESSION['active_subscriber']=='' || $_SESSION['active_user']==''){
         die('session_expired');
@@ -203,8 +178,12 @@
         return $status_info['status'];
     }
 
-    function All(){
+    function All($limit){
       $sql="SELECT * FROM patients WHERE status='active' AND subscriber_id='".$this->active_subscriber."'";
+      if(is_numeric($limit) && $limit >0){
+        $sql.="LIMIT $limit";
+      }
+
       $result=$this->mysqli->query($sql);
       while ($rows=$result->fetch_assoc()) {
         $data[]=$rows;
@@ -213,9 +192,13 @@
     }
 
     function Find($term){
-      $sql="SELECT * FROM patients WHERE (surname='".$term."' || othernames='".$term."' || patient_id='".$term."' || phone_number='".$term."') AND subscriber_id='".$this->active_subscriber."'";
+      $sql="SELECT * FROM patients";
+      $sql.= " WHERE (surname LIKE '%" . $term . "%' || othernames LIKE '%" . $term . "%' || patient_id LIKE '%" . $term . "%' || phone_number LIKE '%" . $term . "%') AND subscriber_id='" . $this->active_subscriber . "' LIMIT 20";
       $result=$this->mysqli->query($sql);
-      return $result->fetch_assoc();
+      while ($rows = $result->fetch_assoc()) {
+        $data[] = $rows;
+      }
+      return $data;
     }
 
 

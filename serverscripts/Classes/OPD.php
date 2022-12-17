@@ -500,6 +500,27 @@
       return $data;
     }
 
+
+
+
+
+    // reports
+    function OPDReportDiagnosis(){
+      $sql = "SELECT * FROM patient_diagnosis";
+      // $sql .= " WHERE subscriber_id='" . $this->active_subscriber . "'AND patient_id='" . $this->patient_id . "' AND visit_id='" . $this->visit_id . "' AND status='active'";
+      $r = $this->mysqli->query($sql);
+      if($r->num_rows > 0){
+        while ($rows=$r->fetch_assoc()) {
+          $data[]=$rows;
+        }
+        return $data;
+      }
+    }
+
+    function PresentingComplains(){
+      
+    }
+
   }
 
 

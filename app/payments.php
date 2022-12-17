@@ -22,8 +22,7 @@ switch ($access_level) {
 }
 ?>
 
-<main class="py-3 mx-lg-5 main">
-	<div class="container-fluid mt-2">
+
 
 		<div class="row">
 			<div class="col-md-6 ">
